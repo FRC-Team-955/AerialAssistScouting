@@ -261,25 +261,25 @@ function processLoadedData(data)
         }
         
         else if(dataIndex % totalLength <= autoLength)
-            newRobots.dataAuto[(dataIndex % totalLength) - 1]++;
+            newRobots[curRobot].dataAuto[(dataIndex % totalLength) - 1]++;
         
         else if(dataIndex % totalLength <= teleopLength + autoLength)
-            newRobots.dataTeleop[(dataIndex % totalLength) - 1]++;
+            newRobots[curRobot].dataTeleop[(dataIndex % totalLength) - 1]++;
         
         else if(dataIndex % totalLength === autoLength + teleopLength + 1)
-            newRobots.zone = data[dataIndex];
+            newRobots[curRobot].zone = data[dataIndex];
         
         else if(dataIndex % totalLength === totalLength - 1)
-            newRobots.comment = data[dataIndex];
+            newRobots[curRobot].comment = data[dataIndex];
         
         else
-            newRobots.dataTag[data % totalLength] = data[dataIndex];
+            newRobots[curRobot].dataTag[data % totalLength] = data[dataIndex];
     }
     
     var data = "";
     
     for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
-        data += newRobots[robotIndex].getString + "/n";
+        data += newRobots[robotIndex].getString() + "/n";
     
     writeToFile(data, masterFileName);
 }

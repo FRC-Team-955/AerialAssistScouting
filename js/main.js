@@ -1,17 +1,17 @@
 // Header for writing files
-var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF ZONE,BALL PASS,LEGIT PASS,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US";
+var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF ZONE,BALL PASS,LEGIT PASS,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS";
         
 // Keyboard keys
-var tagKeys = ['1', '2', '3', '4', '5', '6', '7', '8'];
+var tagKeys = ['1', '2', '3', '4', '5', '6'];
 var teleopKeys = [['q', 'a', 'z', 'w', 's', 'x'], ['t', 'g', 'b', 'y', 'h', 'n'], ['o', 'l', '.', 'p', ';', '/']];
-var autoKeys = [['q', 'a', 'z', 'w', 's'], ['t', 'g', 'b', 'y', 'h'], ['o', 'l', '.', 'p', ';']];
+var autoKeys = [['q', 'a', 'z', 'w'], ['t', 'g', 'b', 'y'], ['o', 'l', '.', 'p']];
 
 // Array lengths
 var teleopLength = teleopKeys[0].length;
 var autoLength = autoKeys[0].length;
 var tagLength = tagKeys.length;
 var robotLength = 3;
-var totalLength = autoLength + teleopLength + tagLength + 2;
+var totalLength = split(header, ",").length;//autoLength + teleopLength + tagLength + 3;
 
 // Variables to hold DOM elements
 var $teamNames = new Array(robotLength);
@@ -121,21 +121,41 @@ Robot.prototype.getString = function()
    return ret;
 };
 
+// Loads the string data into the robot data
+Robot.prototype.loadData = function(data)
+{
+    console.log("Robot Load: " + data);
+    var dataLen = data.length;
+    
+    for(var dataIndex = 0; dataIndex < dataLen; dataIndex++)
+    {
+        if(dataIndex < autoLength)
+            this.dataAuto[dataIndex] += convertToNumber(data[dataIndex]);
+        
+        else if(dataIndex < autoLength + teleopLength)
+            this.dataTeleop[dataIndex - autoLength] += convertToNumber(data[dataIndex]);
+        
+        else if(dataIndex < autoLength + teleopLength + 1)
+            this.zone = data[dataIndex];
+        
+        else if(dataIndex < autoLength + teleopLength + 1 + tagLength)
+            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] = data[dataIndex];
+        
+        else
+            this.comment = data[dataIndex];
+    }
+};
+
 // Called when the app is first loaded
 function init()
 {
     // Check for the various File API support.
-    if (window.File && window.FileReader && window.FileList && window.Blob)
-    {
-      // Great success! All the File APIs are supported.
-      console.log("sup yo");
-    } 
-    
-    else 
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
       alert('The File APIs are not fully supported in this browser.');
     
     console.log("init");
-    console.log(split(header, ","));
+    var tmp = split(header, ',');
+    console.log(tmp + " " + tmp.length);
     // Setting the variables to hold all the DOM elements
 //    $teamNames = [$("teamName1"), $("teamName2"), $("teamName3")];
 //    $tags = [$("tag1"), $("tag2"), $("tag3")];
@@ -185,19 +205,19 @@ function processInputData()
                 if(inputTeleop[inputIndex] === teleopKeys[robotIndex][keyIndex])
                     robots[robotIndex].dataTeleop[keyIndex]++;
     
-    var data = "";
+    var fileData = "";
     
     for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
     { 
         robots[robotIndex].processData($teamNames[robotIndex].val(), $tags[robotIndex].val(), $comments[robotIndex].val(), zones[robotIndex]); // TODO: FIXZ THISZ
-        data += robots[robotIndex].getString() + "\n";
+        fileData += robots[robotIndex].getString() + "\n";
     }
     
-    writeToFile(data, matchNumber + allianceColor + ".csv");
+    writeToFile(fileData, matchNumber + allianceColor + ".csv");
     reset();
 }
 
-// Stringify all data and writes it
+// Writes the data to the users computer with the specified name
 function writeToFile(data, fileName)
 {
     var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
@@ -207,6 +227,8 @@ function writeToFile(data, fileName)
 // Reads all files
 function getLoadedFiles(evt)
 {
+    console.log("getLoadedFiles()");
+    
     var files = evt.target.files;
     var data = [];
     var filesLoaded = 0;
@@ -234,54 +256,38 @@ function processLoadedData(data)
     var newRobots = [];
     var curRobot = 0;
     
-    for(var dataIndex = 0; dataIndex < data.length; dataIndex++)
+    for(var dataIndex = 0; dataIndex < data.length; dataIndex += totalLength)
     {
-        if(dataIndex % totalLength === 0)   // Means new robot, we're at the name
+        var foundRobot = false;
+
+        for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
         {
-            var foundRobot = false;
-            
-            for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
+            if(newRobots[robotIndex].teamName === data[dataIndex])
             {
-                if(newRobots[robotIndex].teamName === data[dataIndex])
-                {
-                    curRobot = robotIndex;
-                    foundRobot = true;
-                    break;
-                }
+                curRobot = robotIndex;
+                foundRobot = true;
+                break;
             }
-            
-            if(!foundRobot)
-            {
-                newRobots.push(new Robot());
-                curRobot = newRobots.length - 1;
-                newRobots[curRobot].teamName = data[dataIndex];
-            }
-            
-            newRobots[curRobot].matches++;
         }
-        
-        else if(dataIndex % totalLength <= autoLength)
-            newRobots[curRobot].dataAuto[(dataIndex % totalLength) - 1]++;
-        
-        else if(dataIndex % totalLength <= teleopLength + autoLength)
-            newRobots[curRobot].dataTeleop[(dataIndex % totalLength) - 1]++;
-        
-        else if(dataIndex % totalLength === autoLength + teleopLength + 1)
-            newRobots[curRobot].zone = data[dataIndex];
-        
-        else if(dataIndex % totalLength === totalLength - 1)
-            newRobots[curRobot].comment = data[dataIndex];
-        
-        else
-            newRobots[curRobot].dataTag[data % totalLength] = data[dataIndex];
+
+        if(!foundRobot)
+        {
+            newRobots.push(new Robot());
+            curRobot = newRobots.length - 1;
+            newRobots[curRobot].teamName = data[dataIndex];
+        }
+
+        newRobots[curRobot].matches++;
+        console.log((dataIndex + 1) + " " + (dataIndex + totalLength) + " " + data.length);
+        newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
     }
     
-    var data = "";
+    var fileData = "";
     
     for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
-        data += newRobots[robotIndex].getString() + "/n";
+        fileData += newRobots[robotIndex].getString() + "/n";
     
-    writeToFile(data, masterFileName);
+    writeToFile(fileData, masterFileName);
 }
 
 // Removes commas from strings
@@ -321,8 +327,6 @@ function setRadioInDiv(divName)
         case "white3": $("#btWhite3").prop("checked", true); break;
         case "red3": $("#btRed3").prop("checked", true); break;
     }
-    
-    console.log($("#btBlue1").val());
 }
 
 // Gets the value of the selected button in specified zone
@@ -330,7 +334,7 @@ function getZoneVal(index)
 {
     var ret = $("input:radio[name=zone" + (index + 1) + "]:checked").val();
     
-    if(ret === "undefined")
+    if(!ret)
         ret = "NONE";
     
     return ret;
@@ -354,6 +358,20 @@ function split(str, delim)
     
     if(index !== str.length)
         ret.push(str.substring(index, str.length));
+    
+    return ret;
+}
+
+// Converts the string to a number, retursn 0 if can't find number
+function convertToNumber(str)
+{
+    var ret = parseInt(str);
+    
+    if(!ret)
+    {
+        console.log("ERROR, CAN'T CONVERT '" + str + "' TO A NUMBER.");
+        ret = 0;
+    }
     
     return ret;
 }

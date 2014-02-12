@@ -161,8 +161,8 @@ function init()
 //    $tags = [$("tag1"), $("tag2"), $("tag3")];
 //    zones = ["NONE", "NONE", "NONE"];
 //    $comments = [$("comment1"), $("comment2"), $("comment3")];
-//    $inputBoxTeleop = $("inputBoxTeleop");
-//    $inputBoxAuto = $("inputBoxAuto");
+//    $inputBoxTeleop = $("inputTeleop");
+//    $inputBoxAuto = $("inputAuto");
 //    $matchNumberBox = $("matchNumber")
 }
 
@@ -315,17 +315,17 @@ function setRadioInDiv(divName)
 {
     switch(divName)
     {
-        case "blue1": $("#btBlue1").prop("checked", true); break;
-        case "white1": $("#btWhite1").prop("checked", true); break;
-        case "red1": $("#btRed1").prop("checked", true); break;
+        case "blue1": $("#btBlue1").prop("checked", !$("#btBlue1").is(":checked")); break;
+        case "white1": $("#btWhite1").prop("checked", !$("#btWhite1").is(":checked")); break;
+        case "red1": $("#btRed1").prop("checked", !$("#btRed1").is(":checked")); break;
             
-        case "blue2": $("#btBlue2").prop("checked", true); break;
-        case "white2": $("#btWhite2").prop("checked", true); break;
-        case "red2": $("#btRed2").prop("checked", true); break;
+        case "blue2": $("#btBlue2").prop("checked", !$("#btBlue2").is(":checked")); break;
+        case "white2": $("#btWhite2").prop("checked", !$("#btWhite2").is(":checked")); break;
+        case "red2": $("#btRed2").prop("checked", !$("#btRed2").is(":checked")); break;
         
-        case "blue3": $("#btBlue3").prop("checked", true); break;
-        case "white3": $("#btWhite3").prop("checked", true); break;
-        case "red3": $("#btRed3").prop("checked", true); break;
+        case "blue3": $("#btBlue3").prop("checked", !$("#btBlue3").is(":checked")); break;
+        case "white3": $("#btWhite3").prop("checked", !$("#btWhite3").is(":checked")); break;
+        case "red3": $("#btRed3").prop("checked", !$("#btRed3").is(":checked")); break;
     }
 }
 

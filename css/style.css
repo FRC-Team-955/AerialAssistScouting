@@ -2,11 +2,58 @@
 {
     margin: 0px;
     padding: 0px;
+    font-family: sans-serif;
+/*    border: solid blue 1px;*/
 }
 
 body
 {
+    min-width: 100px;
     background-color: rgb(230, 230, 230);
+}
+
+textArea
+{
+    resize: none;
+    background-color: transparent;
+    border: solid rgb(170, 170, 170) 2px;
+}
+
+/* TITLE */
+#titleBox
+{
+    position: absolute;
+    border-radius: 3px;
+    text-align: center;
+    width: 500px;
+    height: 50px;
+    top: 20px;
+    left: 50px;
+    background-color: rgb(204, 204, 204);
+}
+
+#title
+{
+    position: relative;
+    top: 7px;
+    font-size: 30px;
+}
+
+/* ZONES */
+#zonesContainer
+{
+    min-width: 300px;
+    position: absolute;
+    top: 100px;
+    left: 125px;
+    text-align: center;
+}
+
+#zonesTitle
+{
+    position: relative;
+    top: 0px;
+    font-size: 17px;
 }
 
 #zones
@@ -15,24 +62,26 @@ body
     border: solid rgb(170, 170, 170) 1px;
 }
 
-#blue1, #blue2, #blue3, #white1, #white2, #white3, #red1, #red2, #red3
+.innerZone
 {
+    position: relative;
     float: left;
-    width: 100px;
-    height: 100px;
+    width: 115px;
+    height: 105px;
     border: solid rgb(170, 170, 170) 1px;
     text-align: center;
+}
+
+/* ZONE BUTTONS */
+.innerZoneButtons
+{
+    position: relative;
+    top: 45%;
 }
 
 #blue1, #blue2, #blue3
 {
     background-color: rgb(14, 127, 205);
-}
-
-#btBlue1, #btWhite1, #btRed1
-{
-    position: relative;
-    top: 45%;
 }
 
 #white1, #white2, #white3
@@ -45,9 +94,18 @@ body
     background-color: rgb(255, 17, 33);
 }
 
-textArea
+/* INPUT BOX */
+#inputBox
 {
-    resize: none;
-    background-color: transparent;
-    border: solid rgb(170, 170, 170) 2px;
+    position: absolute;
+    top: 460px;
+    left: 125px;
 }
+
+/* TEAM 1 DATA */
+#team1Data
+{
+    position: absolute;
+    
+}
+

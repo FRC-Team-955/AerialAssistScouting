@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -11,47 +11,59 @@
     <title>Aerial Assist Scouting!</title>
 </head>
 <body>
-    <h1>Aerial Assist Scouting!</h1>
-    
-    <div id="zones">
-        <div id="blue1">
-            <input type="radio" id="btBlue1" name="zone1" value="blue"/>
-        </div>
-        <div id="white1">
-            <input type="radio" id="btWhite1" name="zone1" value="white"/>
-        </div>
-        <div id="red1">
-            <input type="radio" id="btRed1" name="zone1" value="red"/>
-        </div>
-        <br>
-        <div id="blue2">
-            
-        </div>
-        <div id="white2">
-            
-        </div>
-        <div id="red2">
-            
-        </div>
-        <br>
-        <div id="blue3">
-            
-        </div>
-        <div id="white3">
-            
-        </div>
-        <div id="red3">
-            
+    <div id="titleBox">
+        <p id="title">SCOUTING: THE PROGRAM</p>
+    </div>
+    <div id="zonesContainer">
+        <p id="zonesTitle">PREFERRED ZONES</p>
+        <div id="zones">
+            <div id="blue1" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btBlue1" name="zone1" value="blue"/>
+            </div>
+            <div id="white1" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btWhite1" name="zone1" value="white"/>
+            </div>
+            <div id="red1" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btRed1" name="zone1" value="red"/>
+            </div>
+            <br>
+            <div id="blue2" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btBlue2" name="zone2" value="blue"/>
+            </div>
+            <div id="white2" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btWhite2" name="zone2" value="white"/>
+            </div>
+            <div id="red2" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btRed2" name="zone2" value="red"/>
+            </div>
+            <br>
+            <div id="blue3" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btBlue3" name="zone3" value="blue"/>
+            </div>
+            <div id="white3" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btWhite3" name="zone3" value="white"/>
+            </div>
+            <div id="red3" class="innerZone">
+                <input type="radio" class="innerZoneButtons" id="btRed3" name="zone3" value="red"/>
+            </div>
         </div>
     </div>
     <div id="inputBox">
         <p>INPUT: TELEOP</p>
-        <textarea rows="4" cols="50"></textarea>
+        <textarea id="inputTeleop" rows="4" cols="56"></textarea>
         <p>INPUT: AUTO</p>
-        <textarea rows="4" cols="50"></textarea>
+        <textarea id="inputAuto" rows="4" cols="56"></textarea>
     </div>
-    <form>
+    <div id="team1Data">
+        <div id="team1NameLable">
+            <p>Team #1</p>
+        </div>
+        <textarea id="teamName1" rows="1" cols="10"></textarea>
+        <textarea id="tags1" rows="2" cols="26"></textarea>
+        <textarea id="comments" rows="2" cols="26"></textarea>
+    </div>
+<!--        <form>
         <input type="file" id="files" multiple/><br><br><br>
-    </form>
+    </form>-->
 </body>
 </html>

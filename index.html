@@ -11,56 +11,80 @@
     <title>Aerial Assist Scouting!</title>
 </head>
 <body>
-    <div id="titleBox">
-        <p id="title">SCOUTING: THE PROGRAM</p>
-    </div>
-    <div id="zonesContainer">
-        <p id="zonesTitle">PREFERRED ZONES</p>
-        <div id="zones">
-            <div id="blue1" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btBlue1" name="zone1" value="blue"/>
-            </div>
-            <div id="white1" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btWhite1" name="zone1" value="white"/>
-            </div>
-            <div id="red1" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btRed1" name="zone1" value="red"/>
-            </div>
-            <br>
-            <div id="blue2" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btBlue2" name="zone2" value="blue"/>
-            </div>
-            <div id="white2" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btWhite2" name="zone2" value="white"/>
-            </div>
-            <div id="red2" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btRed2" name="zone2" value="red"/>
-            </div>
-            <br>
-            <div id="blue3" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btBlue3" name="zone3" value="blue"/>
-            </div>
-            <div id="white3" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btWhite3" name="zone3" value="white"/>
-            </div>
-            <div id="red3" class="innerZone">
-                <input type="radio" class="innerZoneButtons" id="btRed3" name="zone3" value="red"/>
+    <div id="content">
+        <div id="titleBox">
+            <p id="title">SCOUTING: THE PROGRAM</p>
+        </div>
+        <div id="zonesContainer">
+            <p id="zonesTitle">PREFERRED ZONES</p>
+            <div id="zones">
+                <div id="blue1" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btBlue1" name="zone1" value="blue"/>
+                </div>
+                <div id="white1" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btWhite1" name="zone1" value="white"/>
+                </div>
+                <div id="red1" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btRed1" name="zone1" value="red"/>
+                </div>
+                <br>
+                <div id="blue2" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btBlue2" name="zone2" value="blue"/>
+                </div>
+                <div id="white2" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btWhite2" name="zone2" value="white"/>
+                </div>
+                <div id="red2" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btRed2" name="zone2" value="red"/>
+                </div>
+                <br>
+                <div id="blue3" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btBlue3" name="zone3" value="blue"/>
+                </div>
+                <div id="white3" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btWhite3" name="zone3" value="white"/>
+                </div>
+                <div id="red3" class="innerZone">
+                    <input type="radio" class="innerZoneButtons" id="btRed3" name="zone3" value="red"/>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="inputBox">
-        <p>INPUT: TELEOP</p>
-        <textarea id="inputTeleop" rows="4" cols="56"></textarea>
-        <p>INPUT: AUTO</p>
-        <textarea id="inputAuto" rows="4" cols="56"></textarea>
-    </div>
-    <div id="team1Data">
-        <div id="team1NameLable">
-            <p>Team #1</p>
+        <div id="inputBox">
+            <p>INPUT: TELEOP</p>
+            <textarea id="inputTeleop" rows="4" cols="56"></textarea>
+            <p>INPUT: AUTO</p>
+            <textarea id="inputAuto" rows="4" cols="56"></textarea>
         </div>
-        <textarea id="teamName1" rows="1" cols="10"></textarea>
-        <textarea id="tags1" rows="2" cols="26"></textarea>
-        <textarea id="comments" rows="2" cols="26"></textarea>
+        <div id="team1Data">
+            <div class="teamNameLable">
+                <p class="teamNameHeader">Team #1:</p>
+            </div>
+            <input type="text" id="teamName1" class="teamName">
+            <p class="tagsHeader">Tags</p>
+            <textarea id="tags1" rows="2" cols="26" class="tags"></textarea>
+            <p class="commentsHeader">Comments</p>
+            <textarea id="comments1" rows="2" cols="26" class="comments"></textarea>
+        </div>
+        <div id="team2Data">
+            <div class="teamNameLable">
+                <p class="teamNameHeader">Team #2:</p>
+            </div>
+            <input type="text" id="teamName2" class="teamName">
+            <p class="tagsHeader">Tags</p>
+            <textarea id="tags2" rows="2" cols="26" class="tags"></textarea>
+            <p class="commentsHeader">Comments</p>
+            <textarea id="comments2" rows="2" cols="26" class="comments"></textarea>
+        </div>
+        <div id="team3Data">
+            <div class="teamNameLable">
+                <p class="teamNameHeader">Team #3:</p>
+            </div>
+            <input type="text" id="teamName3" class="teamName">
+            <p class="tagsHeader">Tags</p>
+            <textarea id="tags3" rows="2" cols="26" class="tags"></textarea>
+            <p class="commentsHeader">Comments</p>
+            <textarea id="comments3" rows="2" cols="26" class="comments"></textarea>
+        </div>
     </div>
 <!--        <form>
         <input type="file" id="files" multiple/><br><br><br>

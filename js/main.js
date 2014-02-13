@@ -38,9 +38,19 @@ var masterFileName = "MasterScouting.csv";
 
 $(document).ready(function(){
     $("#files").change(getLoadedFiles);
+    
     $("div").click(function(){
         setRadioInDiv(this.id);
     });
+    
+    $("#writeToFile").click(function(){
+        processInputData();
+    });
+    
+    $("#writeToMasterFile").click(function(){
+        $("#writeToMasterFileActual").click();
+    });
+    
     init();
 });
 
@@ -149,6 +159,7 @@ Robot.prototype.loadData = function(data)
 // Called when the app is first loaded
 function init()
 {
+    
     // Check for the various File API support.
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
       alert('The File APIs are not fully supported in this browser.');

@@ -158,9 +158,9 @@ function init()
     console.log(tmp + " " + tmp.length);
     // Setting the variables to hold all the DOM elements
 //    $teamNames = [$("teamName1"), $("teamName2"), $("teamName3")];
-//    $tags = [$("tag1"), $("tag2"), $("tag3")];
+//    $tags = [$("tags1"), $("tags2"), $("tags3")];
 //    zones = ["NONE", "NONE", "NONE"];
-//    $comments = [$("comment1"), $("comment2"), $("comment3")];
+//    $comments = [$("comments1"), $("comments2"), $("comments3")];
 //    $inputBoxTeleop = $("inputTeleop");
 //    $inputBoxAuto = $("inputAuto");
 //    $matchNumberBox = $("matchNumber")

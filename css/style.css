@@ -3,6 +3,7 @@
     margin: 0px;
     padding: 0px;
     font-family: sans-serif;
+    -webkit-user-select: none;
 /*    border: solid blue 1px;*/
 }
 
@@ -46,6 +47,115 @@ textArea
     position: relative;
     top: 7px;
     font-size: 30px;
+}
+
+/* MATCH NUMBER */
+#matchContainer
+{
+    position: absolute;
+    top: 20px;
+    left: 900px;
+}
+
+#matchLabel
+{
+    position: absolute;
+    width: 170px;
+    height: 50px;
+    background-color: rgb(204, 204, 204);
+    border-radius: 3px;
+}
+
+#matchHeader
+{
+    position: absolute;
+    top: 18%;
+    left: 14%;
+    font-size: 27px;
+}
+
+#matchNumber
+{
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    width: 130px;
+    height: 40px;
+    background-color: rgb(204, 204, 204);
+    border-radius: 3px;
+}
+
+/* Submit boxes */
+#submitContainer
+{
+    position: absolute;
+    top: 200px;
+    left: 922px;
+}
+
+#writeToFile
+{
+    position: absolute;
+    width: 130px;
+    height: 200px;
+    top: 0px;
+    background-color: rgb(14, 127, 205);
+}
+
+#writeToMasterFile
+{
+    position: absolute;
+    width: 130px;
+    height: 200px;
+    top: 220px;
+    background-color: rgb(255, 17, 33);
+}
+
+.submitText
+{
+    text-align: center;
+    top: 50px;
+    font-size: 10px;
+}
+
+/* ALLIANCE COLOR BUTTONS */
+#allianceContainer
+{
+    position: absolute;
+    top: 15px;
+    left: 500px;
+}
+
+#allianceBlue
+{
+    position: absolute;
+    width: 150px;
+    height: 35px;
+    top: 10px;
+    left: 10px;
+    background-color: rgb(14, 127, 205);
+    border-radius: 3px;
+}
+
+#allianceRed
+{
+    position: absolute;
+    width: 150px;
+    height: 35px;
+    top: 10px;
+    left: 200px;
+    background-color: rgb(255, 17, 33);
+    border-radius: 3px;
+}
+
+.allianceText
+{
+    position: absolute;
+    top: 33%;
+    left: 26%;
+    font-size: 9px;
 }
 
 /* ZONES */
@@ -115,7 +225,7 @@ textArea
 #team1Data
 {
     position: absolute;
-    top: 116px;
+    top: 110px;
     left: 450px;
 }
 
@@ -123,7 +233,7 @@ textArea
 #team2Data
 {
     position: absolute;
-    top: 222px;
+    top: 218px;
     left: 450px;
 }
 
@@ -131,14 +241,16 @@ textArea
 #team3Data
 {
     position: absolute;
-    top: 333px;
+    top: 328px;
     left: 450px;
 }
 
 .teamNameLable
 {
-    width: 80px;
-    height: 33px;
+    position: absolute;
+    top: 3px;
+    width: 70px;
+    height: 26px;
     border-radius: 3px;
     background-color: rgb(204, 204, 204);
 }
@@ -146,8 +258,9 @@ textArea
 .teamNameHeader
 {
     position: absolute;
-    top: 20%;
-    left: 10%;
+    top: 27%;
+    left: 18%;
+    font-size: 10px;
 }
 
 .teamName
@@ -157,7 +270,7 @@ textArea
     width: 50px;
     height: 25px;
     top: 1px;
-    left: 100px;
+    left: 90px;
     background-color: rgb(204, 204, 204);
     border-radius: 3px;
 }
@@ -166,14 +279,14 @@ textArea
 {
     position: absolute;
     top: 40px;
-    left: 60px;
-    font-size: 13px;
+    left: 70px;
+    font-size: 9px;
 }
 
 .tags
 {
     position: absolute;
-    top: 60px;
+    top: 52px;
     left: 0px;
 }
 
@@ -181,13 +294,13 @@ textArea
 {
     position: absolute;
     top: 40px;
-    left: 245px;
-    font-size: 13px;
+    left: 263px;
+    font-size: 9px;
 }
 
 .comments
 {
     position: absolute;
-    top: 60px;
+    top: 52px;
     left: 200px;
 }

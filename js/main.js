@@ -21,9 +21,6 @@ var $inputTeleop;
 var $inputAuto;
 var $matchNumber;
 
-// Contains value in zone
-var zones = new Array(robotLength);
-
 // Robot array
 var robots = new Array(robotLength);
 
@@ -33,12 +30,14 @@ var matchNumber = 0;
 // Alliance color
 var allianceColor = "";
 
+// Hex color values of red and blue used in css style file
+var colorBlue = rgbToHex(14, 127, 205);
+var colorRed = rgbToHex(255, 17, 33);
+
 // Master file name
 var masterFileName = "MasterScouting.csv";
 
 $(document).ready(function(){
-    $("#files").change(getLoadedFiles);
-    
     $("div").click(function(){
         setRadioInDiv(this.id);
     });
@@ -49,6 +48,15 @@ $(document).ready(function(){
     
     $("#writeToMasterFile").click(function(){
         $("#writeToMasterFileActual").click();
+        $("#writeToMasterFileActual").change(getLoadedFiles);
+    });
+    
+    $("#allianceBlue").click(function(){
+        setAllianceButton("blue");
+    });
+    
+    $("#allianceRed").click(function(){
+        setAllianceButton("red");
     });
     
     init();
@@ -159,7 +167,6 @@ Robot.prototype.loadData = function(data)
 // Called when the app is first loaded
 function init()
 {
-    
     // Check for the various File API support.
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
       alert('The File APIs are not fully supported in this browser.');
@@ -167,14 +174,16 @@ function init()
     console.log("init");
     var tmp = split(header, ',');
     console.log(tmp + " " + tmp.length);
+    
     // Setting the variables to hold all the DOM elements
-//    $teamNames = [$("teamName1"), $("teamName2"), $("teamName3")];
-//    $tags = [$("tags1"), $("tags2"), $("tags3")];
-//    zones = ["NONE", "NONE", "NONE"];
-//    $comments = [$("comments1"), $("comments2"), $("comments3")];
-//    $inputBoxTeleop = $("inputTeleop");
-//    $inputBoxAuto = $("inputAuto");
-//    $matchNumberBox = $("matchNumber")
+    $teamNames = [$("#teamName1"), $("#teamName2"), $("#teamName3")];
+    $tags = [$("#tags1"), $("#tags2"), $("#tags3")];
+    $comments = [$("#comments1"), $("#comments2"), $("#comments3")];
+    $inputTeleop = $("#inputTeleop");
+    $inputAuto = $("#inputAuto");
+    $matchNumberBox = $("#matchNumber");
+    reset();
+    setAllianceButton("blue");
 }
 
 // Resets everything
@@ -184,7 +193,6 @@ function reset()
     {
         $teamNames[i].val("Team " + (i + 1));
         $tags[i].val("");
-        zones[i] = "NONE";
         $comments[i].val("");
         $inputAuto.val("");
         $inputTeleop.val("");
@@ -204,13 +212,13 @@ function processInputData()
     var inputAuto = $inputAuto.val();
     var inputTeleop = $inputTeleop.val();
     
-    for(var inputIndex = 0; inputIndex < inputAuto.length(); inputIndex++)
+    for(var inputIndex = 0; inputIndex < inputAuto.length; inputIndex++)
         for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
             for(var keyIndex = 0; keyIndex < autoLength; keyIndex++)
                 if(inputAuto[inputIndex] === autoKeys[robotIndex][keyIndex])
                     robots[robotIndex].dataAuto[keyIndex]++;
     
-    for(var inputIndex = 0; inputIndex < inputTeleop.length(); inputIndex++)
+    for(var inputIndex = 0; inputIndex < inputTeleop.length; inputIndex++)
         for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
             for(var keyIndex = 0; keyIndex < teleopLength; keyIndex++)
                 if(inputTeleop[inputIndex] === teleopKeys[robotIndex][keyIndex])
@@ -220,7 +228,7 @@ function processInputData()
     
     for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
     { 
-        robots[robotIndex].processData($teamNames[robotIndex].val(), $tags[robotIndex].val(), $comments[robotIndex].val(), zones[robotIndex]); // TODO: FIXZ THISZ
+        robots[robotIndex].processData($teamNames[robotIndex].val(), $tags[robotIndex].val(), $comments[robotIndex].val(), getZoneVal(robotIndex));
         fileData += robots[robotIndex].getString() + "\n";
     }
     
@@ -373,6 +381,28 @@ function split(str, delim)
     return ret;
 }
 
+// Changes the alliance color and submit box colors when alliance color buttons are pressed
+function setAllianceButton(color)
+{
+    if(color === "blue")
+    {
+        allianceColor = "blue";
+        $("#allianceBlue").css({"opacity" : "1"});
+        $("#allianceRed").css({"opacity" : "0.2"});
+        $("#writeToFile").css({"background-color" : colorBlue});
+        $("#writeToMasterFile").css({"background-color" : colorBlue});
+    }
+    
+    if(color === "red")
+    {
+        allianceColor = "red";
+        $("#allianceBlue").css({"opacity" : "0.2"});
+        $("#allianceRed").css({"opacity" : "1"});
+        $("#writeToFile").css({"background-color" : colorRed});
+        $("#writeToMasterFile").css({"background-color" : colorRed});
+    }
+}
+
 // Converts the string to a number, retursn 0 if can't find number
 function convertToNumber(str)
 {
@@ -385,4 +415,23 @@ function convertToNumber(str)
     }
     
     return ret;
+}
+
+// Converts rgb to hex
+function rgbToHex(r, g, b)
+{
+    var red = r.toString(16);
+    var green = g.toString(16);
+    var blue = b.toString(16);
+    
+    if(red.length < 2)
+        red = "0" + red;
+    
+    if(green.length < 2)
+        green = "0" + green;
+    
+    if(blue.length < 2)
+        blue = "0" + blue;
+
+    return "#" + red + green + blue;
 }

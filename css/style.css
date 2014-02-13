@@ -3,6 +3,7 @@
     margin: 0px;
     padding: 0px;
     font-family: sans-serif;
+    border: none;
     -webkit-user-select: none;
 /*    border: solid blue 1px;*/
 }
@@ -34,7 +35,6 @@ textArea
 {
     position: absolute;
     border-radius: 3px;
-    text-align: center;
     width: 450px;
     height: 50px;
     top: 20px;
@@ -44,8 +44,9 @@ textArea
 
 #title
 {
-    position: relative;
-    top: 7px;
+    position: absolute;
+    top: 16%;
+    left: 5.5%;
     font-size: 30px;
 }
 
@@ -77,12 +78,12 @@ textArea
 #matchNumber
 {
     text-align: center;
-    vertical-align: middle;
     position: absolute;
     top: 70px;
     left: 20px;
     width: 130px;
     height: 40px;
+    font-size: 33px;
     background-color: rgb(204, 204, 204);
     border-radius: 3px;
 }
@@ -284,8 +285,8 @@ textArea
     text-align: center;
     position: absolute;
     width: 50px;
-    height: 25px;
-    top: 1px;
+    height: 26px;
+    top: 3px;
     left: 90px;
     background-color: rgb(204, 204, 204);
     border-radius: 3px;

@@ -191,7 +191,7 @@ function reset()
 {
     for(var i = 0; i < robotLength; i++)
     {
-        $teamNames[i].val("Team " + (i + 1));
+        $teamNames[i].val("");
         $tags[i].val("");
         $comments[i].val("");
         $inputAuto.val("");

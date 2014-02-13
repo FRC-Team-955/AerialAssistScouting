@@ -181,7 +181,7 @@ function init()
     $comments = [$("#comments1"), $("#comments2"), $("#comments3")];
     $inputTeleop = $("#inputTeleop");
     $inputAuto = $("#inputAuto");
-    $matchNumberBox = $("#matchNumber");
+    $matchNumber = $("#matchNumber");
     reset();
     setAllianceButton("blue");
 }
@@ -203,6 +203,7 @@ function reset()
         robots[i].reset();
     }
     
+    updateMatchNumber();    
     resetZones();
 }
 
@@ -415,6 +416,17 @@ function convertToNumber(str)
     }
     
     return ret;
+}
+
+// Update match number
+function updateMatchNumber()
+{
+    var tmp = convertToNumber($matchNumber.val());
+    
+    if(tmp !== 0 && tmp > 0)
+        matchNumber = tmp;
+    
+    $matchNumber.val(++matchNumber);
 }
 
 // Converts rgb to hex

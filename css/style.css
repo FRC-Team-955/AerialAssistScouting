@@ -320,3 +320,11 @@ textArea
     top: 52px;
     left: 200px;
 }
+
+/* KEY */
+#key
+{
+    position: absolute;
+    top: 445px;
+    left: 460px;
+}

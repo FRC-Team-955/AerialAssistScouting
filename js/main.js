@@ -4,7 +4,7 @@ var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF
 // Keyboard keys
 var tagKeys = ['1', '2', '3', '4', '5', '6'];
 var teleopKeys = [['q', 'a', 'z', 'w', 's', 'x'], ['t', 'g', 'b', 'y', 'h', 'n'], ['o', 'l', '.', 'p', ';', '/']];
-var autoKeys = [['q', 'a', 'z', 'w'], ['t', 'g', 'b', 'y'], ['o', 'l', '.', 'p']];
+var autoKeys = [['q', 'a', 'w', 's'], ['t', 'g', 'y', 'h'], ['o', 'l', 'p', ';']];
 
 // Array lengths
 var teleopLength = teleopKeys[0].length;

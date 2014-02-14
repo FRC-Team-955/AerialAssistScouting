@@ -1,5 +1,5 @@
 // Header for writing files
-var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF ZONE,BALL PASS,LEGIT PASS,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS";
+var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF ZONE,BALL PASS,LEGIT PASS,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS,";
         
 // Keyboard keys
 var tagKeys = ['1', '2', '3', '4', '5', '6'];
@@ -38,6 +38,8 @@ var colorRed = rgbToHex(255, 17, 33);
 var masterFileName = "MasterScouting.csv";
 
 $(document).ready(function(){
+    $("#writeToMasterFileActual").change(getLoadedFiles);
+    
     $("div").click(function(){
         setRadioInDiv(this.id);
     });
@@ -48,7 +50,6 @@ $(document).ready(function(){
     
     $("#writeToMasterFile").click(function(){
         $("#writeToMasterFileActual").click();
-        $("#writeToMasterFileActual").change(getLoadedFiles);
     });
     
     $("#allianceBlue").click(function(){
@@ -113,7 +114,7 @@ Robot.prototype.processData = function(teamName, tagData, comment, zone)
     for(var dataIndex = 0; dataIndex < tagData.length; dataIndex++)
         for(var keyIndex = 0; keyIndex < tagKeys.length; keyIndex++)
             if(tagData[dataIndex] === tagKeys[keyIndex])
-                this.dataTag[dataIndex] = true;
+                this.dataTag[keyIndex] = true;
 };
 
 // Converts the robots data to a string
@@ -134,7 +135,7 @@ Robot.prototype.getString = function()
     for(var i = 0; i < this.dataTag.length; i++)
         ret  += this.dataTag[i] + ",";
 
-   ret += this.comment + ",";
+   ret += this.comment + ",\n";
    
    return ret;
 };
@@ -142,7 +143,6 @@ Robot.prototype.getString = function()
 // Loads the string data into the robot data
 Robot.prototype.loadData = function(data)
 {
-    console.log("Robot Load: " + data);
     var dataLen = data.length;
     
     for(var dataIndex = 0; dataIndex < dataLen; dataIndex++)
@@ -171,7 +171,7 @@ function init()
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
       alert('The File APIs are not fully supported in this browser.');
     
-    console.log("init");
+    console.log("INIT");
     var tmp = split(header, ',');
     console.log(tmp + " " + tmp.length);
     
@@ -225,12 +225,12 @@ function processInputData()
                 if(inputTeleop[inputIndex] === teleopKeys[robotIndex][keyIndex])
                     robots[robotIndex].dataTeleop[keyIndex]++;
     
-    var fileData = "";
+    var fileData = header + "\n";
     
     for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
     { 
         robots[robotIndex].processData($teamNames[robotIndex].val(), $tags[robotIndex].val(), $comments[robotIndex].val(), getZoneVal(robotIndex));
-        fileData += robots[robotIndex].getString() + "\n";
+        fileData += robots[robotIndex].getString();
     }
     
     writeToFile(fileData, matchNumber + allianceColor + ".csv");
@@ -247,7 +247,7 @@ function writeToFile(data, fileName)
 // Reads all files
 function getLoadedFiles(evt)
 {
-    console.log("getLoadedFiles()");
+    console.log("MASTERFILE BUTTON CLICKED");
     
     var files = evt.target.files;
     var data = [];
@@ -273,39 +273,47 @@ function getLoadedFiles(evt)
 // Process and write to master file
 function processLoadedData(data)
 {
+    console.log("DATA USED FOR MASTERFILE");
+    console.log(data.length + ": " + data);
     var newRobots = [];
     var curRobot = 0;
     
-    for(var dataIndex = 0; dataIndex < data.length; dataIndex += totalLength)
+    for(var dataIndex = 0; dataIndex < data.length - 1; dataIndex += totalLength)
     {
-        var foundRobot = false;
+        var curTeamName = removeNewLine(data[dataIndex]);
 
-        for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
+        if(curTeamName !== "TEAM #") // Means we're looking at the header
         {
-            if(newRobots[robotIndex].teamName === data[dataIndex])
+            var foundRobot = false;
+            
+            for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
             {
-                curRobot = robotIndex;
-                foundRobot = true;
-                break;
+                if(newRobots[robotIndex].teamName === curTeamName)
+                {
+                    curRobot = robotIndex;
+                    foundRobot = true;
+                    break;
+                }
             }
-        }
 
-        if(!foundRobot)
-        {
-            newRobots.push(new Robot());
-            curRobot = newRobots.length - 1;
-            newRobots[curRobot].teamName = data[dataIndex];
-        }
+            if(!foundRobot)
+            {
+                newRobots.push(new Robot());
+                curRobot = newRobots.length - 1;
+                newRobots[curRobot].teamName = curTeamName;
+            }
 
-        newRobots[curRobot].matches++;
-        console.log((dataIndex + 1) + " " + (dataIndex + totalLength) + " " + data.length);
-        newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
+            console.log("ROBOT DATA");
+            console.log(data.slice(dataIndex, dataIndex + totalLength));
+            newRobots[curRobot].matches++;
+            newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
+        }
     }
     
-    var fileData = "";
+    var fileData = header + "\n";
     
     for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
-        fileData += newRobots[robotIndex].getString() + "/n";
+        fileData += newRobots[robotIndex].getString();
     
     writeToFile(fileData, masterFileName);
 }
@@ -370,9 +378,7 @@ function split(str, delim)
     
     while((delimIndex = str.indexOf(delim, index)) !== -1)
     {
-        if(delimIndex !== index)
-            ret.push(str.substring(index, delimIndex));
-        
+        ret.push(str.substring(index, delimIndex));
         index = delimIndex + delimLen;
     }
     
@@ -446,4 +452,16 @@ function rgbToHex(r, g, b)
         blue = "0" + blue;
 
     return "#" + red + green + blue;
+}
+
+// Removes new line character
+function removeNewLine(data)
+{
+    var ret = "";
+    
+    for(var i = 0; i < data.length; i++)
+        if(data[i] !== "\n")
+            ret += data[i];
+    
+    return ret;
 }

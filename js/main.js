@@ -1,5 +1,5 @@
 // Header for writing files
-var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,PREF ZONE,BALL PASS,LEGIT PASS,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS,";
+var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,BALL PASS,LEGIT PASS,PREF ZONE,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS,";
         
 // Keyboard keys
 var tagKeys = ['1', '2', '3', '4', '5', '6'];
@@ -137,6 +137,7 @@ Robot.prototype.getString = function()
 
    ret += this.comment + ",\n";
    
+   console.log(ret);
    return ret;
 };
 

@@ -230,6 +230,65 @@ textArea
     background-color: rgb(255, 17, 33);
 }
 
+/* KEY BOX */
+.innerKeyContainer
+{
+    background-color: rgb(255, 255, 255);
+    border-radius: 3px;
+}
+
+.innerKeyHeader
+{
+    position: relative;
+    text-align: center;
+    top: 3px;
+    font-size: 10px;
+}
+
+#keyContainer
+{
+    position: absolute;
+    border-radius: 3px;
+    width: 371px;
+    height: 175px;
+    top: 478px;
+    left: 450px;
+    border: solid rgb(170, 170, 170) 2px;
+}
+
+#keyHeader
+{
+    position: absolute;
+    top: -20px;
+}
+
+#keyTeleopContainer
+{
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    top: 0px;
+    left: 0;
+}
+
+#keyAutoContainer
+{
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    top: 0px;
+    left: 110px;
+}
+
+#keyTagsContainer
+{
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    top: 0px;
+    left: 220px;
+}
+
 /* INPUT BOX */
 #inputBox
 {

@@ -253,6 +253,8 @@ textArea
     position: absolute;
     top: 0px;
     left: -10px;
+    width: 472px;
+    height: auto;
 }
 
 /* INPUT BOX */

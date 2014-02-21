@@ -11,7 +11,7 @@ var teleopLength = teleopKeys[0].length;
 var autoLength = autoKeys[0].length;
 var tagLength = tagKeys.length;
 var robotLength = 3;
-var totalLength = split(header, ",").length;//autoLength + teleopLength + tagLength + 3;
+var totalLength = split(header, ",").length;
 
 // Variables to hold DOM elements
 var $teamNames = new Array(robotLength);
@@ -34,10 +34,33 @@ var allianceColor = "";
 var colorBlue = rgbToHex(14, 127, 205);
 var colorRed = rgbToHex(255, 17, 33);
 
-// Master file name
+// Master file 
 var masterFileName = "MasterScouting.csv";
 
-$(document).ready(function(){
+// When document is loaded call init function
+$(document).ready(init);
+
+// Called when the app is first loaded
+function init()
+{   
+    console.log("INIT");
+    var tmp = split(header, ',');
+    console.log(tmp + " " + tmp.length);
+    
+    if(!window.chrome)
+        alert("Sorry but this has been developed only for chrome.");
+    
+    // Check for the various File API support.
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
+      alert('The File APIs are not fully supported in this browser.');
+  
+    initDomRelated();
+    reset();
+    setAllianceButton("blue");
+}
+
+function initDomRelated()
+{
     $("#writeToMasterFileActual").change(getLoadedFiles);
     
     $("div").click(function(){
@@ -60,122 +83,6 @@ $(document).ready(function(){
         setAllianceButton("red");
     });
     
-    init();
-});
-
-// Class to hold all the robot data
-function Robot()
-{
-    this.matchesPlayed = 0;
-    this.dataTeleop = new Array(teleopLength);
-    this.dataAuto = new Array(autoLength);
-    this.dataTag = new Array(tagLength);
-    this.comment = "";
-    this.teamName = "";
-    this.zone = "";
-    
-    for(var i = 0; i < teleopLength; i++)
-        this.dataTeleop[i] = 0;
-
-    for(var i = 0; i < autoLength; i++)
-        this.dataAuto[i] = 0;
-
-    for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = false;
-}
-
-// Resets all the members in robot
-Robot.prototype.reset = function()
-{
-    this.dataTeleop = new Array(teleopLength);
-    this.dataAuto = new Array(autoLength);
-    this.dataTag = new Array(tagLength);
-    this.comment = "";
-    this.teamName = "";
-    this.zone = "";
-    
-    for(var i = 0; i < teleopLength; i++)
-        this.dataTeleop[i] = 0;
-
-    for(var i = 0; i < autoLength; i++)
-        this.dataAuto[i] = 0;
-
-    for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = false;
-};
-
-// Sets the robots properties
-Robot.prototype.processData = function(teamName, tagData, comment, zone)
-{
-    this.teamName = removeCommas(teamName);
-    this.comment = removeCommas(comment);
-    this.zone = removeCommas(zone);
-
-    for(var dataIndex = 0; dataIndex < tagData.length; dataIndex++)
-        for(var keyIndex = 0; keyIndex < tagKeys.length; keyIndex++)
-            if(tagData[dataIndex] === tagKeys[keyIndex])
-                this.dataTag[keyIndex] = true;
-};
-
-// Converts the robots data to a string
-Robot.prototype.getString = function()
-{
-    var ret = "";
-
-    ret += this.teamName + ",";
-
-    for(var i = 0; i < this.dataAuto.length; i++)
-        ret += this.dataAuto[i] + ",";
-
-    for(var i = 0; i < this.dataTeleop.length; i++)
-        ret += this.dataTeleop[i] + ",";
-
-    ret += this.zone + ",";
-
-    for(var i = 0; i < this.dataTag.length; i++)
-        ret  += this.dataTag[i] + ",";
-
-   ret += this.comment + ",\n";
-   
-   console.log(ret);
-   return ret;
-};
-
-// Loads the string data into the robot data
-Robot.prototype.loadData = function(data)
-{
-    var dataLen = data.length;
-    
-    for(var dataIndex = 0; dataIndex < dataLen; dataIndex++)
-    {
-        if(dataIndex < autoLength)
-            this.dataAuto[dataIndex] += convertToNumber(data[dataIndex]);
-        
-        else if(dataIndex < autoLength + teleopLength)
-            this.dataTeleop[dataIndex - autoLength] += convertToNumber(data[dataIndex]);
-        
-        else if(dataIndex < autoLength + teleopLength + 1)
-            this.zone = data[dataIndex];
-        
-        else if(dataIndex < autoLength + teleopLength + 1 + tagLength)
-            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] = data[dataIndex];
-        
-        else
-            this.comment = data[dataIndex];
-    }
-};
-
-// Called when the app is first loaded
-function init()
-{
-    // Check for the various File API support.
-    if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
-      alert('The File APIs are not fully supported in this browser.');
-    
-    console.log("INIT");
-    var tmp = split(header, ',');
-    console.log(tmp + " " + tmp.length);
-    
     // Setting the variables to hold all the DOM elements
     $teamNames = [$("#teamName1"), $("#teamName2"), $("#teamName3")];
     $tags = [$("#tags1"), $("#tags2"), $("#tags3")];
@@ -183,8 +90,6 @@ function init()
     $inputTeleop = $("#inputTeleop");
     $inputAuto = $("#inputAuto");
     $matchNumber = $("#matchNumber");
-    reset();
-    setAllianceButton("blue");
 }
 
 // Resets everything
@@ -251,7 +156,7 @@ function getLoadedFiles(evt)
     console.log("MASTERFILE BUTTON CLICKED");
     
     var files = evt.target.files;
-    var data = [];
+    var data = "";
     var filesLoaded = 0;
     var filesLength = files.length;
     
@@ -261,10 +166,10 @@ function getLoadedFiles(evt)
 
         reader.onload = function()
         {
-            data = data.concat(split(this.result, ","));
+            data += this.result;
             
             if(++filesLoaded === filesLength)
-                processLoadedData(data);
+                processLoadedData(split(data, ","));
         };
 
         reader.readAsText(f);
@@ -274,41 +179,42 @@ function getLoadedFiles(evt)
 // Process and write to master file
 function processLoadedData(data)
 {
-    console.log("DATA USED FOR MASTERFILE");
-    console.log(data.length + ": " + data);
+    console.log("DATA USED FOR MASTERFILE: " + data.length);
+    console.log(data);
     var newRobots = [];
     var curRobot = 0;
     
     for(var dataIndex = 0; dataIndex < data.length - 1; dataIndex += totalLength)
     {
         var curTeamName = removeNewLine(data[dataIndex]);
+        console.log("Team Name: " + curTeamName);
+        
+        if(curTeamName === "TEAM #") // Means we're looking at the header
+            continue;
+        
+        var foundRobot = false;
 
-        if(curTeamName !== "TEAM #") // Means we're looking at the header
+        for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
         {
-            var foundRobot = false;
-            
-            for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
+            if(newRobots[robotIndex].teamName === curTeamName)
             {
-                if(newRobots[robotIndex].teamName === curTeamName)
-                {
-                    curRobot = robotIndex;
-                    foundRobot = true;
-                    break;
-                }
+                curRobot = robotIndex;
+                foundRobot = true;
+                break;
             }
-
-            if(!foundRobot)
-            {
-                newRobots.push(new Robot());
-                curRobot = newRobots.length - 1;
-                newRobots[curRobot].teamName = curTeamName;
-            }
-
-            console.log("ROBOT DATA");
-            console.log(data.slice(dataIndex, dataIndex + totalLength));
-            newRobots[curRobot].matches++;
-            newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
         }
+
+        if(!foundRobot)
+        {
+            newRobots.push(new Robot());
+            curRobot = newRobots.length - 1;
+            newRobots[curRobot].teamName = curTeamName;
+        }
+
+        console.log("ROBOT DATA");
+        console.log(data.slice(dataIndex, dataIndex + totalLength));
+        newRobots[curRobot].matches++;
+        newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
     }
     
     var fileData = header + "\n";
@@ -466,3 +372,106 @@ function removeNewLine(data)
     
     return ret;
 }
+
+/*                                CLASSES                                   */
+// Class to hold all the robot data
+function Robot()
+{
+    this.matchesPlayed = 0;
+    this.dataTeleop = new Array(teleopLength);
+    this.dataAuto = new Array(autoLength);
+    this.dataTag = new Array(tagLength);
+    this.comment = "";
+    this.teamName = "";
+    this.zone = "";
+    
+    for(var i = 0; i < teleopLength; i++)
+        this.dataTeleop[i] = 0;
+
+    for(var i = 0; i < autoLength; i++)
+        this.dataAuto[i] = 0;
+
+    for(var i = 0; i < tagLength; i++)
+        this.dataTag[i] = false;
+}
+
+// Resets all the members in robot
+Robot.prototype.reset = function()
+{
+    this.dataTeleop = new Array(teleopLength);
+    this.dataAuto = new Array(autoLength);
+    this.dataTag = new Array(tagLength);
+    this.comment = "";
+    this.teamName = "";
+    this.zone = "";
+    
+    for(var i = 0; i < teleopLength; i++)
+        this.dataTeleop[i] = 0;
+
+    for(var i = 0; i < autoLength; i++)
+        this.dataAuto[i] = 0;
+
+    for(var i = 0; i < tagLength; i++)
+        this.dataTag[i] = false;
+};
+
+// Sets the robots properties
+Robot.prototype.processData = function(teamName, tagData, comment, zone)
+{
+    this.teamName = removeCommas(teamName);
+    this.comment = removeCommas(comment);
+    this.zone = removeCommas(zone);
+
+    for(var dataIndex = 0; dataIndex < tagData.length; dataIndex++)
+        for(var keyIndex = 0; keyIndex < tagKeys.length; keyIndex++)
+            if(tagData[dataIndex] === tagKeys[keyIndex])
+                this.dataTag[keyIndex] = true;
+};
+
+// Converts the robots data to a string
+Robot.prototype.getString = function()
+{
+    var ret = "";
+
+    ret += this.teamName + ",";
+
+    for(var i = 0; i < this.dataAuto.length; i++)
+        ret += this.dataAuto[i] + ",";
+
+    for(var i = 0; i < this.dataTeleop.length; i++)
+        ret += this.dataTeleop[i] + ",";
+
+    ret += this.zone + ",";
+
+    for(var i = 0; i < this.dataTag.length; i++)
+        ret  += this.dataTag[i] + ",";
+
+   ret += this.comment + ",\n";
+   
+   console.log(ret);
+   return ret;
+};
+
+// Loads the string data into the robot data
+Robot.prototype.loadData = function(data)
+{
+    var dataLen = data.length;
+    
+    for(var dataIndex = 0; dataIndex < dataLen; dataIndex++)
+    {
+        if(dataIndex < autoLength)
+            this.dataAuto[dataIndex] += convertToNumber(data[dataIndex]);
+        
+        else if(dataIndex < autoLength + teleopLength)
+            this.dataTeleop[dataIndex - autoLength] += convertToNumber(data[dataIndex]);
+        
+        else if(dataIndex < autoLength + teleopLength + 1)
+            this.zone = data[dataIndex];
+        
+        else if(dataIndex < autoLength + teleopLength + 1 + tagLength)
+            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] = data[dataIndex];
+        
+        else
+            this.comment = data[dataIndex];
+    }
+};

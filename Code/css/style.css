@@ -235,26 +235,62 @@ textArea
 {
     position: absolute;
     border-radius: 3px;
-    width: 371px;
-    height: 175px;
-    top: 474px;
+    top: 460px;
     left: 450px;
 }
 
 #keyHeader
 {
     position: absolute;
-    top: -15px;
-    left: -8px;
+    top: 0px;
+    left: 0px;
 }
 
-#key
+#keyContentContainer
 {
     position: absolute;
-    top: 0px;
-    left: -10px;
-    width: 472px;
-    height: auto;
+    top: 19px;
+    left: 0px;
+    width: 437px;
+    height: 178px;
+    border: solid rgb(170, 170, 170) 2px;
+}
+
+#keyAuto
+{
+    width: 150px;
+    top: 3px;
+    left: 3px;
+}
+
+#keyTeleop
+{
+    width: 150px;
+    top: 3px;
+    left: 156px;
+}
+
+#keyTags
+{
+    width: 125px;
+    top: 3px;
+    left: 309px;
+}
+
+.keyContainer
+{
+    border: solid rgb(170, 170, 170) 1px;
+    height: 100px;
+}
+
+.keyTable
+{
+    position: absolute;
+    font-size: 8px;
+    text-align: center;
+    border-radius: 3px;
+    background-color: white;
+    border: solid rgb(206, 206, 206) 2px;
 }
 
 /* INPUT BOX */

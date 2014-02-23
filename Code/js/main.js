@@ -1,6 +1,6 @@
 // Header for writing files
 var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,BALL PASS,LEGIT PASS,PREF ZONE,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS,";
-        
+       
 // Keyboard keys
 var tagKeys = ['1', '2', '3', '4', '5', '6'];
 var teleopKeys = [['q', 'a', 'z', 'w', 's', 'x'], ['t', 'g', 'b', 'y', 'h', 'n'], ['o', 'l', '.', 'p', ';', '/']];
@@ -25,7 +25,7 @@ var $matchNumber;
 var robots = new Array(robotLength);
 
 // Current match number of the match
-var matchNumber = 0; 
+var matchNumber = 0;
 
 // Alliance color
 var allianceColor = "";

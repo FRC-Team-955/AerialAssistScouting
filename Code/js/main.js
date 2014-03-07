@@ -1,8 +1,8 @@
 // Header for writing files
-var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,BALL PASS,LEGIT PASS,PREF ZONE,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,GOOD WITH US,COMMENTS,";
+var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,BALL PASS,LEGIT PASS,PREF ZONE,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,CAN CATCH FROM PLAYER,BALL CAN FALL OUT EASILY,GOOD WITH US,COMMENTS,";
        
 // Keyboard keys
-var tagKeys = ['1', '2', '3', '4', '5', '6'];
+var tagKeys = ['1', '2', '3', '4', '5', '6', '7', '8'];
 var teleopKeys = [['q', 'a', 'z', 'w', 's', 'x'], ['t', 'g', 'b', 'y', 'h', 'n'], ['o', 'l', '.', 'p', ';', '/']];
 var autoKeys = [['q', 'a', 'w', 's'], ['t', 'g', 'y', 'h'], ['o', 'l', 'p', ';']];
 
@@ -199,6 +199,7 @@ function processLoadedData(data)
             if(newRobots[robotIndex].teamName === curTeamName)
             {
                 curRobot = robotIndex;
+                newRobots[curRobot].matches++;
                 foundRobot = true;
                 break;
             }
@@ -213,7 +214,6 @@ function processLoadedData(data)
 
         console.log("ROBOT DATA");
         console.log(data.slice(dataIndex, dataIndex + totalLength));
-        newRobots[curRobot].matches++;
         newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
     }
     
@@ -377,7 +377,7 @@ function removeNewLine(data)
 // Class to hold all the robot data
 function Robot()
 {
-    this.matchesPlayed = 0;
+    this.matches = 1;
     this.dataTeleop = new Array(teleopLength);
     this.dataAuto = new Array(autoLength);
     this.dataTag = new Array(tagLength);
@@ -392,12 +392,13 @@ function Robot()
         this.dataAuto[i] = 0;
 
     for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = false;
+        this.dataTag[i] = 0;
 }
 
 // Resets all the members in robot
 Robot.prototype.reset = function()
 {
+    this.matches = 1;
     this.dataTeleop = new Array(teleopLength);
     this.dataAuto = new Array(autoLength);
     this.dataTag = new Array(tagLength);
@@ -412,7 +413,7 @@ Robot.prototype.reset = function()
         this.dataAuto[i] = 0;
 
     for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = false;
+        this.dataTag[i] = 0;
 };
 
 // Sets the robots properties
@@ -425,7 +426,7 @@ Robot.prototype.processData = function(teamName, tagData, comment, zone)
     for(var dataIndex = 0; dataIndex < tagData.length; dataIndex++)
         for(var keyIndex = 0; keyIndex < tagKeys.length; keyIndex++)
             if(tagData[dataIndex] === tagKeys[keyIndex])
-                this.dataTag[keyIndex] = true;
+                this.dataTag[keyIndex]++;
 };
 
 // Converts the robots data to a string
@@ -444,7 +445,7 @@ Robot.prototype.getString = function()
     ret += this.zone + ",";
 
     for(var i = 0; i < this.dataTag.length; i++)
-        ret  += this.dataTag[i] + ",";
+        ret  += this.dataTag[i] + "/" + this.matches + ",";
 
    ret += this.comment + ",\n";
    
@@ -469,7 +470,7 @@ Robot.prototype.loadData = function(data)
             this.zone = data[dataIndex];
         
         else if(dataIndex < autoLength + teleopLength + 1 + tagLength)
-            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] = data[dataIndex];
+            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] += convertToNumber(data[dataIndex]);
         
         else
             this.comment = data[dataIndex];

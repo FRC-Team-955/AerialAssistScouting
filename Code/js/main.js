@@ -1,146 +1,357 @@
-// Header for writing files
-var header = "TEAM #,A:HIGH HOT,A:HIGH,A:LOW HOT,A:LOW,HIGH,LOW,TRUSS,CATCH,BALL PASS,LEGIT PASS,PREF ZONE,DEFENSIVE,LEGIT DEFENSE,OFFENSIVE,LEGIT OFFENSIVE,BROKEN,CAN CATCH FROM PLAYER,BALL CAN FALL OUT EASILY,GOOD WITH US,COMMENTS,";
-       
-// Keyboard keys
-var tagKeys = ['1', '2', '3', '4', '5', '6', '7', '8'];
-var teleopKeys = [['q', 'a', 'z', 'w', 's', 'x'], ['t', 'g', 'b', 'y', 'h', 'n'], ['o', 'l', '.', 'p', ';', '/']];
-var autoKeys = [['q', 'a', 'w', 's'], ['t', 'g', 'y', 'h'], ['o', 'l', 'p', ';']];
+var header = "TEAM #,A HIGH,A LOW,A HOT HIGH,A HOT LOW,A HIGH ATTEMPTS,T HIGH,T LOW,T PASSES,T TRUSS,T HIGH ATTEMPTS,T TRUSS ATTEMPTS,OFFENSE,LEGIT OFFENSE,DEF,LEGIT DEF,BROKEN,CATCH FROM PLAYER,LOOSE GRIP,2BALL AUTO,GOOD WITH US,COMMENTS\n";
+var keyCodes = { zero: 48, nine: 57, tab: 9 };
+var joyCodes = { a: 0, b: 1, x: 2, y: 3, leftBumper: 4, rightBumper: 5, leftTrigger: 6, rightTrigger: 7, back: 8, start: 9, leftStick: 10, rightStick: 11, dpadUp: 12, dpadDown: 13, dpadLeft: 14, dpadRight: 15 };
+var maxSticks = 2;
+var maxStickButtons = 16;
+var pressedThreshold = 0.5;
+var tagColors = { red: "backgroundRed", blue: "backgroundBlue", gray: "backgroundLightGray"};
+var borderColors = { gray: "borderGray", purple: "borderPurple", red: "borderRed", blue: "borderBlue", lightGray: "borderLightGray" };
+var teamNumbers = [];
+var joyModes = { auto: 1, teleop: 2, tag: 3 };
+var joyMode = [joyModes.auto, joyModes.auto];
+var lastInput = [{ input: null, m: null }, { input: null, m: null }];
 
-// Array lengths
-var teleopLength = teleopKeys[0].length;
-var autoLength = autoKeys[0].length;
-var tagLength = tagKeys.length;
-var robotLength = 3;
-var totalLength = split(header, ",").length;
-
-// Variables to hold DOM elements
-var $teamNames = new Array(robotLength);
-var $tags = new Array(robotLength);
-var $comments = new Array(robotLength);
-var $inputTeleop;
-var $inputAuto;
+// DOM elements
+var $containers = {};
 var $matchNumber;
+var $alliance = [];
+var $autoData = [];
+var $teleopData = [];
+var $tags = [];
+var $comments = [];
 
-// Robot array
-var robots = new Array(robotLength);
+// Data for each robot
+var autoData = [[[], [], []], [[], [], []]];
+var teleopData = [[[], [], []], [[], [], []]];
+var tags = [[[], [], []], [[], [], []]];
+var comments = [["", "", ""], ["", "", ""]]; 
 
-// Current match number of the match
-var matchNumber = 0;
+var joysticks = [0, 0];
+var teamIndexes = [0, 0];
 
-// Alliance color
-var allianceColor = "";
-
-// Hex color values of red and blue used in css style file
-var colorBlue = rgbToHex(14, 127, 205);
-var colorRed = rgbToHex(255, 17, 33);
-
-// Master file 
-var masterFileName = "MasterScouting.csv";
-
-// When document is loaded call init function
 $(document).ready(init);
 
-// Called when the app is first loaded
+// Called when document loads
 function init()
-{   
-    console.log("INIT");
-    var tmp = split(header, ',');
-    console.log(tmp + " " + tmp.length);
-    
-    if(!window.chrome)
-        alert("Sorry but this has been developed only for chrome.");
-    
-    // Check for the various File API support.
-    if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
-      alert('The File APIs are not fully supported in this browser.');
-  
-    initDomRelated();
-    reset();
-    setAllianceButton("blue");
-}
-
-function initDomRelated()
 {
-    $("#writeToMasterFileActual").change(getLoadedFiles);
+    $("input[type=text]").keypress(preventNonNumber);
+    $("input[type=text]").keyup(updateTeamData);
+    $("input[type=text]").change(preventEmptyInput);
+    $("input[type=text]").click(function(){ this.select(); });
+    $("input[type=text].team").click(teamClicked);
+    $("textarea").keyup(updateTeamData);
+    $("#redTags").find("div.tag").click(function(){ tagsClicked(true, this.id); });
+    $("#blueTags").find("div.tag").click(function(){ tagsClicked(false, this.id); });
+    $("#matchTitleBox").dblclick(function(){ $("#getTeamNumbers").click(); });
+    $("#saveMatchFileBox").click(saveMatchFile);
+    $("#createMasterFileBox").click(function(){ $("#createMasterFile").click(); });
+    $("#createMasterFile").change(getMatchFiles);
+    $("#matchNumber").keyup(updateTeamNumbers);
+    $("#getTeamNumbers").change(getTeamNumbersFile);
     
-    $("div").click(function(){
-        setRadioInDiv(this.id);
-    });
+    $matchNumber = $("#matchNumber")[0];
+    $matchNumber.value = 0;
     
-    $("#writeToFile").click(function(){
-        processInputData();
-    });
+    $containers = { 
+        auto: $("#autoContainer")[0],
+        teleop: $("#teleopContainer")[0],
+        redTags: $("#redTags")[0],
+        blueTags: $("#blueTags")[0]
+    };
     
-    $("#writeToMasterFile").click(function(){
-        $("#writeToMasterFileActual").click();
-    });
+    $alliance = [
+        $("*.team[id*=red]"),
+        $("*.team[id*=blue]")
+    ];
     
-    $("#allianceBlue").click(function(){
-        setAllianceButton("blue");
-    });
-    
-    $("#allianceRed").click(function(){
-        setAllianceButton("red");
-    });
-    
-    // Setting the variables to hold all the DOM elements
-    $teamNames = [$("#teamName1"), $("#teamName2"), $("#teamName3")];
-    $tags = [$("#tags1"), $("#tags2"), $("#tags3")];
-    $comments = [$("#comments1"), $("#comments2"), $("#comments3")];
-    $inputTeleop = $("#inputTeleop");
-    $inputAuto = $("#inputAuto");
-    $matchNumber = $("#matchNumber");
-}
-
-// Resets everything
-function reset()
-{
-    for(var i = 0; i < robotLength; i++)
+    for(var i = 0; i < 2; i++)
     {
-        $teamNames[i].val("");
-        $tags[i].val("");
-        $comments[i].val("");
-        $inputAuto.val("");
-        $inputTeleop.val("");
+        var teamColor = i == 0 ? "#red" : "#blue";
+        var $tmpTags = i == 0 ? $("div[id='redTags']") : $("div[id='blueTags']");
+    
+        $autoData.push({
+            high: $(teamColor + "AutoHigh")[0], 
+            low: $(teamColor + "AutoLow")[0], 
+            hotHigh: $(teamColor + "AutoHotHigh")[0], 
+            hotLow: $(teamColor + "AutoHotLow")[0], 
+            highAttempts: $(teamColor + "AutoHighAttempts")[0]
+        });
         
-        if(!robots[i])
-            robots[i] = new Robot();
-        
-        robots[i].reset();
+        $teleopData.push({
+            high: $(teamColor + "TeleopHigh")[0], 
+            low: $(teamColor + "TeleopLow")[0], 
+            passes: $(teamColor + "TeleopPasses")[0], 
+            truss: $(teamColor + "TeleopTruss")[0], 
+            highAttempts: $(teamColor + "TeleopHighAttempts")[0],
+            trussAttempts: $(teamColor + "TeleopTrussAttempts")[0]
+        });
+    
+       $tags.push({ 
+           offensive: $tmpTags.find("div.offensive")[0], 
+           offensiveSuccess: $tmpTags.find("div.success")[0], 
+           defensive: $tmpTags.find("div.defensive")[0], 
+           defensiveSuccess: $tmpTags.find("div.success")[1], 
+           broken: $tmpTags.find("div.broken")[0], 
+           canCatch: $tmpTags.find("div.canCatch")[0], 
+           looseGrip: $tmpTags.find("div.looseGrip")[0], 
+           twoBallAuto: $tmpTags.find("div.twoBallAuto")[0], 
+           goodWithYou: $tmpTags.find("div.goodWithYou")[0] 
+       }); 
+       
+       $comments.push($(teamColor + "Comments")[0]);
     }
     
-    updateMatchNumber();    
-    resetZones();
+    print("Inited");
+    if(typeof(Storage) !== "undefined")
+    {
+        var numbers = localStorage.teamNumbers;
+        
+        if(typeof(numbers) === "undefined")
+            alert('Please upload a file containing team numbers by double clicking on "Match#:"');
+        
+        else
+            processTeamNumbers(localStorage.teamNumbers);
+    }
+    
+    reset();
+    main();
 }
 
-// Gets all the data, processes it, and saves it
-function processInputData()
-{
-    var inputAuto = $inputAuto.val();
-    var inputTeleop = $inputTeleop.val();
+// Resets everything in the scouting application
+function reset()
+{    
+    $matchNumber.value = 1 + ($matchNumber.value - 0);
     
-    for(var inputIndex = 0; inputIndex < inputAuto.length; inputIndex++)
-        for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
-            for(var keyIndex = 0; keyIndex < autoLength; keyIndex++)
-                if(inputAuto[inputIndex] === autoKeys[robotIndex][keyIndex])
-                    robots[robotIndex].dataAuto[keyIndex]++;
-    
-    for(var inputIndex = 0; inputIndex < inputTeleop.length; inputIndex++)
-        for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
-            for(var keyIndex = 0; keyIndex < teleopLength; keyIndex++)
-                if(inputTeleop[inputIndex] === teleopKeys[robotIndex][keyIndex])
-                    robots[robotIndex].dataTeleop[keyIndex]++;
-    
-    var fileData = header + "\n";
-    
-    for(var robotIndex = 0; robotIndex < robotLength; robotIndex++)
-    { 
-        robots[robotIndex].processData($teamNames[robotIndex].val(), $tags[robotIndex].val(), $comments[robotIndex].val(), getZoneVal(robotIndex));
-        fileData += robots[robotIndex].getString();
+    for(var stickIndex = 0; stickIndex < maxSticks; stickIndex++)
+    {
+        joysticks[stickIndex] = new Joystick();
+        teamIndexes[stickIndex] = 0;
+        joyMode[stickIndex] = joyModes.auto;
+        
+        for(var teamIndex = 0; teamIndex < $alliance[stickIndex].length; teamIndex++)
+        {
+            autoData[stickIndex][teamIndex] = { 
+                high: 0, 
+                low: 0,
+                hotHigh: 0,
+                hotLow: 0, 
+                highAttempts: 0 
+            };
+            
+            teleopData[stickIndex][teamIndex] = { 
+                high: 0, 
+                low: 0, 
+                passes: 0,
+                truss: 0, 
+                highAttempts: 0,
+                trussAttempts: 0 
+            };
+            
+            tags[stickIndex][teamIndex] = { 
+                offensive: false,
+                offensiveSuccess: false, 
+                defensive: false, 
+                defensiveSuccess: false, 
+                broken: false, 
+                canCatch: false, 
+                looseGrip: false, 
+                twoBallAuto: false, 
+                goodWithYou: false
+            };
+            
+            comments[stickIndex][teamIndex] = ""; 
+        }
     }
     
-    writeToFile(fileData, matchNumber + allianceColor + ".csv");
-    reset();
+    updateTeamNumbers();
+    updateDom();
+}
+
+// Main loop for program
+function main()
+{
+    updateJoysticks();
+    var needUpdateDom = false;
+    
+    for(var joystickIndex = 0; joystickIndex < joysticks.length; joystickIndex++)
+    {
+        if(joysticks[joystickIndex].getButton([joyCodes.back, joyCodes.start]))
+        {
+            if(joysticks[joystickIndex].getButton(joyCodes.back))
+                changeMode(joystickIndex, false);
+            
+            else if(joysticks[joystickIndex].getButton(joyCodes.start))
+                changeMode(joystickIndex, true);
+            
+            needUpdateDom = true;
+        }
+        
+        if(joysticks[joystickIndex].getButton([joyCodes.leftBumper, joyCodes.rightBumper]))
+        {
+            if(joysticks[joystickIndex].getButton(joyCodes.leftBumper))
+            {
+                if(--teamIndexes[joystickIndex] < 0)
+                    teamIndexes[joystickIndex] = $alliance[joystickIndex].length - 1;
+            }
+            
+            else
+            {
+                if(++teamIndexes[joystickIndex] > $alliance[joystickIndex].length - 1)
+                    teamIndexes[joystickIndex] = 0;
+            }
+            
+            needUpdateDom = true;
+        }
+        
+        if(joyMode[joystickIndex] === joyModes.auto)
+        {
+            if(joysticks[joystickIndex].getButton([joyCodes.a, joyCodes.b, joyCodes.x, joyCodes.y, joyCodes.dpadUp]))
+            {
+                lastInput[joystickIndex].input = autoData;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.y))
+                    lastInput[joystickIndex].m = "high";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.a))
+                    lastInput[joystickIndex].m = "low";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.x))
+                    lastInput[joystickIndex].m = "hotHigh";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.b))
+                    lastInput[joystickIndex].m = "hotLow";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadUp))
+                    lastInput[joystickIndex].m = "highAttempts";
+
+                lastInput[joystickIndex].input[joystickIndex][teamIndexes[joystickIndex]][lastInput[joystickIndex].m]++;
+                needUpdateDom = true;
+            }
+        }
+            
+        else if(joyMode[joystickIndex] === joyModes.teleop)
+        {
+            if(joysticks[joystickIndex].getButton([joyCodes.a, joyCodes.b, joyCodes.x, joyCodes.y, joyCodes.dpadLeft, joyCodes.dpadUp]))
+            {
+                lastInput[joystickIndex].input = teleopData;
+                
+                if(joysticks[joystickIndex].getButton(joyCodes.y))
+                    lastInput[joystickIndex].m = "high";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.a))
+                    lastInput[joystickIndex].m = "low";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.x))
+                    lastInput[joystickIndex].m = "passes";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.b))
+                    lastInput[joystickIndex].m = "truss";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadUp))
+                    lastInput[joystickIndex].m = "highAttempts";
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadLeft))
+                    lastInput[joystickIndex].m = "trussAttempts";
+                
+                lastInput[joystickIndex].input[joystickIndex][teamIndexes[joystickIndex]][lastInput[joystickIndex].m]++;
+                needUpdateDom = true;
+            }
+        }
+            
+        else if(joyMode[joystickIndex] === joyModes.tag)
+        {
+            if(joysticks[joystickIndex].getButton([joyCodes.a, joyCodes.b, joyCodes.x, joyCodes.y, joyCodes.dpadLeft, joyCodes.dpadRight, joyCodes.dpadDown, joyCodes.leftStick, joyCodes.rightStick]))
+            {
+                if(joysticks[joystickIndex].getButton(joyCodes.y))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].defensiveSuccess = !tags[joystickIndex][teamIndexes[joystickIndex]].defensiveSuccess;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.a))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].defensive = !tags[joystickIndex][teamIndexes[joystickIndex]].defensive;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.x))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].offensive = !tags[joystickIndex][teamIndexes[joystickIndex]].offensive;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.b))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].offensiveSuccess = !tags[joystickIndex][teamIndexes[joystickIndex]].offensiveSuccess;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadLeft))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].twoBallAuto = !tags[joystickIndex][teamIndexes[joystickIndex]].twoBallAuto;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadDown))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].goodWithYou = !tags[joystickIndex][teamIndexes[joystickIndex]].goodWithYou;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.dpadRight))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].broken = !tags[joystickIndex][teamIndexes[joystickIndex]].broken;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.leftStick))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].looseGrip = !tags[joystickIndex][teamIndexes[joystickIndex]].looseGrip;
+
+                if(joysticks[joystickIndex].getButton(joyCodes.rightStick))
+                    tags[joystickIndex][teamIndexes[joystickIndex]].canCatch = !tags[joystickIndex][teamIndexes[joystickIndex]].canCatch;
+                
+                needUpdateDom = true;
+            }
+        }
+            
+        if(joysticks[joystickIndex].getButton([joyCodes.leftTrigger, joyCodes.rightTrigger]))
+        {
+            if(joysticks[joystickIndex].getButton(joyCodes.leftTrigger))
+                if(lastInput[joystickIndex].input)
+                    if(lastInput[joystickIndex].input[joystickIndex][teamIndexes[joystickIndex]][lastInput[joystickIndex].m] > 0)
+                        lastInput[joystickIndex].input[joystickIndex][teamIndexes[joystickIndex]][lastInput[joystickIndex].m]--;
+     
+            if(joysticks[joystickIndex].getButton(joyCodes.rightTrigger))
+                if(lastInput[joystickIndex].input)
+                    lastInput[joystickIndex].input[joystickIndex][teamIndexes[joystickIndex]][lastInput[joystickIndex].m]++;
+ 
+            needUpdateDom = true;
+        }
+    }
+    
+    if(needUpdateDom)
+        updateDom();
+    
+    window.webkitRequestAnimationFrame(main);
+}
+
+// Processes the teamNumbers.txt file, putting it into an array
+function processTeamNumbers(data)
+{
+    print("processTeamNumbers");
+    print(data);
+    var dataArray = data.split(";");
+    dataArray.pop();
+    
+    for(var dataIndex in dataArray)
+    {
+        var curData = dataArray[dataIndex];
+        var matchNum = parseInt(curData.substring(0, curData.indexOf(":")));
+        var teams = curData.substring(curData.indexOf(":") + 1).split(",");
+        
+        if(matchNum && teams.length === 6)
+            teamNumbers[matchNum - 1] = [teams.slice(0, 3), teams.slice(3, 6)];
+        
+        else
+        {
+            var alertMsg = "Oh noes, error reading the team numbers file!\n\n";
+            alertMsg += "Incorrect format: " + curData;
+            alert(alertMsg);
+            teamNumbers.push([[1, 2, 3], [4, 5, 6]]); 
+        }
+        
+    }
+    
+    print(teamNumbers);
+    updateTeamNumbers();
+}
+
+// Sets the data container border color
+function setContainerColor(elm, newColor)
+{
+    for(var m in borderColors)
+        elm.classList.remove(borderColors[m]);
+    
+    elm.classList.add(newColor);
 }
 
 // Writes the data to the users computer with the specified name
@@ -150,329 +361,41 @@ function writeToFile(data, fileName)
     saveAs(blob, fileName);
 }
 
-// Reads all files
-function getLoadedFiles(evt)
+// Updates joystick
+function updateJoysticks()
 {
-    console.log("MASTERFILE BUTTON CLICKED");
+    var sticks = navigator.webkitGetGamepads();
     
-    var files = evt.target.files;
-    var data = "";
-    var filesLoaded = 0;
-    var filesLength = files.length;
-    
-    for (var i = 0, f; (f = files[i]); i++)
-    {   
-        var reader = new FileReader();
-
-        reader.onload = function()
-        {
-            data += this.result;
-            
-            if(++filesLoaded === filesLength)
-                processLoadedData(split(data, ","));
-        };
-
-        reader.readAsText(f);
-    }
+    for(var stickIndex = 0; stickIndex < sticks.length && stickIndex < maxSticks; stickIndex++)
+        if(sticks[stickIndex])
+            for(var buttonIndex = 0; buttonIndex < sticks[stickIndex].buttons.length && buttonIndex < maxStickButtons; buttonIndex++)
+                joysticks[stickIndex].updateButton(buttonIndex, sticks[stickIndex].buttons[buttonIndex] > pressedThreshold);
 }
 
-// Process and write to master file
-function processLoadedData(data)
+// Change data input mode
+function changeMode(index, increase)
 {
-    console.log("DATA USED FOR MASTERFILE: " + data.length);
-    console.log(data);
-    var newRobots = [];
-    var curRobot = 0;
-    
-    for(var dataIndex = 0; dataIndex < data.length - 1; dataIndex += totalLength)
+    if(increase)
     {
-        var curTeamName = removeNewLine(data[dataIndex]);
-        console.log("Team Name: " + curTeamName);
+        if(joyMode[index] === joyModes.auto)
+            joyMode[index] = joyModes.teleop;
         
-        if(curTeamName === "TEAM #") // Means we're looking at the header
-            continue;
+        else if(joyMode[index] === joyModes.teleop)
+            joyMode[index] = joyModes.tag;
         
-        var foundRobot = false;
-
-        for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
-        {
-            if(newRobots[robotIndex].teamName === curTeamName)
-            {
-                curRobot = robotIndex;
-                newRobots[curRobot].matches++;
-                foundRobot = true;
-                break;
-            }
-        }
-
-        if(!foundRobot)
-        {
-            newRobots.push(new Robot());
-            curRobot = newRobots.length - 1;
-            newRobots[curRobot].teamName = curTeamName;
-        }
-
-        console.log("ROBOT DATA");
-        console.log(data.slice(dataIndex, dataIndex + totalLength));
-        newRobots[curRobot].loadData(data.slice(dataIndex + 1, dataIndex + totalLength));
+        else if(joyMode[index] === joyModes.tag)
+            joyMode[index] = joyModes.auto;
     }
     
-    var fileData = header + "\n";
-    
-    for(var robotIndex = 0; robotIndex < newRobots.length; robotIndex++)
-        fileData += newRobots[robotIndex].getString();
-    
-    writeToFile(fileData, masterFileName);
-}
-
-// Removes commas from strings
-function removeCommas(data)
-{
-    var ret = "";
-    
-    for(var i = 0; i < data.length; i++)
-        if(data[i] !== ',')
-            ret += data[i];
-    
-    return ret;
-}
-
-// Resets zones to false
-function resetZones()
-{
-    $('input[name="zone1"]').prop('checked', false);
-    $('input[name="zone2"]').prop('checked', false);
-    $('input[name="zone3"]').prop('checked', false);
-}
-
-// Sets the radio button to true if its parent div has been clicked
-function setRadioInDiv(divName)
-{
-    switch(divName)
+    else
     {
-        case "blue1": $("#btBlue1").prop("checked", !$("#btBlue1").is(":checked")); break;
-        case "white1": $("#btWhite1").prop("checked", !$("#btWhite1").is(":checked")); break;
-        case "red1": $("#btRed1").prop("checked", !$("#btRed1").is(":checked")); break;
-            
-        case "blue2": $("#btBlue2").prop("checked", !$("#btBlue2").is(":checked")); break;
-        case "white2": $("#btWhite2").prop("checked", !$("#btWhite2").is(":checked")); break;
-        case "red2": $("#btRed2").prop("checked", !$("#btRed2").is(":checked")); break;
+        if(joyMode[index] === joyModes.auto)
+            joyMode[index] = joyModes.tag;
         
-        case "blue3": $("#btBlue3").prop("checked", !$("#btBlue3").is(":checked")); break;
-        case "white3": $("#btWhite3").prop("checked", !$("#btWhite3").is(":checked")); break;
-        case "red3": $("#btRed3").prop("checked", !$("#btRed3").is(":checked")); break;
-    }
-}
-
-// Gets the value of the selected button in specified zone
-function getZoneVal(index)
-{
-    var ret = $("input:radio[name=zone" + (index + 1) + "]:checked").val();
-    
-    if(!ret)
-        ret = "NONE";
-    
-    return ret;
-}
-
-// Splits the string
-function split(str, delim)
-{
-    var index = 0; 
-    var delimIndex = 0;
-    var delimLen = delim.length;
-    var ret = [];
-    
-    while((delimIndex = str.indexOf(delim, index)) !== -1)
-    {
-        ret.push(str.substring(index, delimIndex));
-        index = delimIndex + delimLen;
-    }
-    
-    if(index !== str.length)
-        ret.push(str.substring(index, str.length));
-    
-    return ret;
-}
-
-// Changes the alliance color and submit box colors when alliance color buttons are pressed
-function setAllianceButton(color)
-{
-    if(color === "blue")
-    {
-        allianceColor = "blue";
-        $("#allianceBlue").css({"opacity" : "1"});
-        $("#allianceRed").css({"opacity" : "0.2"});
-        $("#writeToFile").css({"background-color" : colorBlue});
-        $("#writeToMasterFile").css({"background-color" : colorBlue});
-    }
-    
-    if(color === "red")
-    {
-        allianceColor = "red";
-        $("#allianceBlue").css({"opacity" : "0.2"});
-        $("#allianceRed").css({"opacity" : "1"});
-        $("#writeToFile").css({"background-color" : colorRed});
-        $("#writeToMasterFile").css({"background-color" : colorRed});
-    }
-}
-
-// Converts the string to a number, retursn 0 if can't find number
-function convertToNumber(str)
-{
-    var ret = parseInt(str);
-    
-    if(!ret)
-    {
-        console.log("ERROR, CAN'T CONVERT '" + str + "' TO A NUMBER.");
-        ret = 0;
-    }
-    
-    return ret;
-}
-
-// Update match number
-function updateMatchNumber()
-{
-    var tmp = convertToNumber($matchNumber.val());
-    
-    if(tmp !== 0 && tmp > 0)
-        matchNumber = tmp;
-    
-    $matchNumber.val(++matchNumber);
-}
-
-// Converts rgb to hex
-function rgbToHex(r, g, b)
-{
-    var red = r.toString(16);
-    var green = g.toString(16);
-    var blue = b.toString(16);
-    
-    if(red.length < 2)
-        red = "0" + red;
-    
-    if(green.length < 2)
-        green = "0" + green;
-    
-    if(blue.length < 2)
-        blue = "0" + blue;
-
-    return "#" + red + green + blue;
-}
-
-// Removes new line character
-function removeNewLine(data)
-{
-    var ret = "";
-    
-    for(var i = 0; i < data.length; i++)
-        if(data[i] !== "\n")
-            ret += data[i];
-    
-    return ret;
-}
-
-/*                                CLASSES                                   */
-// Class to hold all the robot data
-function Robot()
-{
-    this.matches = 1;
-    this.dataTeleop = new Array(teleopLength);
-    this.dataAuto = new Array(autoLength);
-    this.dataTag = new Array(tagLength);
-    this.comment = "";
-    this.teamName = "";
-    this.zone = "";
-    
-    for(var i = 0; i < teleopLength; i++)
-        this.dataTeleop[i] = 0;
-
-    for(var i = 0; i < autoLength; i++)
-        this.dataAuto[i] = 0;
-
-    for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = 0;
-}
-
-// Resets all the members in robot
-Robot.prototype.reset = function()
-{
-    this.matches = 1;
-    this.dataTeleop = new Array(teleopLength);
-    this.dataAuto = new Array(autoLength);
-    this.dataTag = new Array(tagLength);
-    this.comment = "";
-    this.teamName = "";
-    this.zone = "";
-    
-    for(var i = 0; i < teleopLength; i++)
-        this.dataTeleop[i] = 0;
-
-    for(var i = 0; i < autoLength; i++)
-        this.dataAuto[i] = 0;
-
-    for(var i = 0; i < tagLength; i++)
-        this.dataTag[i] = 0;
-};
-
-// Sets the robots properties
-Robot.prototype.processData = function(teamName, tagData, comment, zone)
-{
-    this.teamName = removeCommas(teamName);
-    this.comment = removeCommas(comment);
-    this.zone = removeCommas(zone);
-
-    for(var dataIndex = 0; dataIndex < tagData.length; dataIndex++)
-        for(var keyIndex = 0; keyIndex < tagKeys.length; keyIndex++)
-            if(tagData[dataIndex] === tagKeys[keyIndex])
-                this.dataTag[keyIndex]++;
-};
-
-// Converts the robots data to a string
-Robot.prototype.getString = function()
-{
-    var ret = "";
-
-    ret += this.teamName + ",";
-
-    for(var i = 0; i < this.dataAuto.length; i++)
-        ret += this.dataAuto[i] + ",";
-
-    for(var i = 0; i < this.dataTeleop.length; i++)
-        ret += this.dataTeleop[i] + ",";
-
-    ret += this.zone + ",";
-
-    for(var i = 0; i < this.dataTag.length; i++)
-        ret  += this.dataTag[i] + "/" + this.matches + ",";
-
-   ret += this.comment + ",\n";
-   
-   console.log(ret);
-   return ret;
-};
-
-// Loads the string data into the robot data
-Robot.prototype.loadData = function(data)
-{
-    var dataLen = data.length;
-    
-    for(var dataIndex = 0; dataIndex < dataLen; dataIndex++)
-    {
-        if(dataIndex < autoLength)
-            this.dataAuto[dataIndex] += convertToNumber(data[dataIndex]);
+        else if(joyMode[index] === joyModes.teleop)
+            joyMode[index] = joyModes.auto;
         
-        else if(dataIndex < autoLength + teleopLength)
-            this.dataTeleop[dataIndex - autoLength] += convertToNumber(data[dataIndex]);
-        
-        else if(dataIndex < autoLength + teleopLength + 1)
-            this.zone = data[dataIndex];
-        
-        else if(dataIndex < autoLength + teleopLength + 1 + tagLength)
-            this.dataTag[dataIndex - (autoLength + teleopLength + 1)] += convertToNumber(data[dataIndex]);
-        
-        else
-            this.comment = data[dataIndex];
+        else if(joyMode[index] === joyModes.tag)
+            joyMode[index] = joyModes.teleop;
     }
-};
+}

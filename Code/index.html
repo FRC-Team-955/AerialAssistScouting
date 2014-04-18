@@ -4,220 +4,150 @@
 <head>
     <meta charset="utf-8"/>
     <link rel="shortcut icon" href="images/logoThumbnail.png">
-    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="css/teams.css"/>
+    <link rel="stylesheet" type="text/css" href="css/autoAndTeleop.css"/>
+    <link rel="stylesheet" type="text/css" href="css/tagAndComment.css"/>
+    <link rel="stylesheet" type="text/css" href="css/matchNumber.css"/>
+    <link rel="stylesheet" type="text/css" href="css/fileButtons.css"/>
     <script type="text/javascript" src="js/jquery/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="js/blob/Blob.js"></script>
     <script type="text/javascript" src="js/fileSaver/FileSaver.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
-    <title>Aerial Assist Scouting!</title>
+    <script type="text/javascript" src="js/eventHandlers.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="text/javascript" src="js/classes.js"></script>
+    <title>Aerial Assist Scouting 1.5!</title>
 </head>
-<body>
+<body class="backgroundLightGray">
     <div id="content">
-        <div id="titleBox">
-            <p id="title">SCOUTING: THE PROGRAM</p>
+        <div id="titleBox" class="backgroundDarkGray curvedBorder centerText">SCOUTING: THE PROGRAM v1.5</div>
+        <input type="file" id="getTeamNumbers"/>
+        <div id="teamsContainer">
+            <input type="text" id="red1" class="team curvedBorder backgroundRed centerText">
+            <input type="text" id="red2" class="team curvedBorder backgroundRed centerText">
+            <input type="text" id="red3" class="team curvedBorder backgroundRed centerText">
+            <input type="text" id="blue1" class="team curvedBorder backgroundBlue centerText">
+            <input type="text" id="blue2" class="team curvedBorder backgroundBlue centerText">
+            <input type="text" id="blue3" class="team curvedBorder backgroundBlue centerText">
         </div>
-        <div id="allianceContainer">
-            <div id="allianceBlue">
-                <p id="textBlue" class="allianceText">BLUE ALLIANCE</p>
-            </div>
-            <div id="allianceRed">
-                <p id="textRed" class="allianceText">RED ALLIANCE</p>
-            </div>
-        </div>
-        <div id="matchContainer">
-            <div id="matchLabel">
-                <p id="matchHeader">MATCH #:</p>
-            </div>
-            <input type="text" id="matchNumber"/>
-        </div>
-        <div id="submitContainer">
-            <div id="writeToFile">
-                <p id="writeToFileHeader">SUBMIT</p>
-            </div>
-            <input type="file" id="writeToMasterFileActual" multiple/>
-            <div id="writeToMasterFile">
-                <p id="writeToMasterFileHeader">WRITE TO MASTER</p>
-            </div>
-        </div>
-        <div id="zonesContainer">
-            <p id="zonesTitle">PREFERRED ZONES</p>
-            <div id="zones">
-                <div id="blue1" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btBlue1" name="zone1" value="blue"/>
+        <div id="dataCollectonContainer" class="backgroundGray">
+            <div id="autoContainer" class="backgroundLightGray dataCollection centerText borderPurple">
+                Autonomous
+                <div class="labelContainer">
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">High:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Low:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Hot High:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Hot Low:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">High Attempts:</div>
                 </div>
-                <div id="white1" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btWhite1" name="zone1" value="white"/>
+                <div class="redDataContainer">
+                    Red
+                    <input type="text" id="redAutoHigh" class="data centerText">
+                    <input type="text" id="redAutoLow" class="data centerText">
+                    <input type="text" id="redAutoHotHigh" class="data centerText">
+                    <input type="text" id="redAutoHotLow" class="data centerText">
+                    <input type="text" id="redAutoHighAttempts" class="data centerText">
                 </div>
-                <div id="red1" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btRed1" name="zone1" value="red"/>
-                </div>
-                <br>
-                <div id="blue2" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btBlue2" name="zone2" value="blue"/>
-                </div>
-                <div id="white2" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btWhite2" name="zone2" value="white"/>
-                </div>
-                <div id="red2" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btRed2" name="zone2" value="red"/>
-                </div>
-                <br>
-                <div id="blue3" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btBlue3" name="zone3" value="blue"/>
-                </div>
-                <div id="white3" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btWhite3" name="zone3" value="white"/>
-                </div>
-                <div id="red3" class="innerZone">
-                    <input type="radio" class="innerZoneButtons" id="btRed3" name="zone3" value="red"/>
+                <div class="blueDataContainer">
+                    Blue
+                    <input type="text" id="blueAutoHigh" class="data centerText">
+                    <input type="text" id="blueAutoLow" class="data centerText">
+                    <input type="text" id="blueAutoHotHigh" class="data centerText">
+                    <input type="text" id="blueAutoHotLow" class="data centerText">
+                    <input type="text" id="blueAutoHighAttempts" class="data centerText">
                 </div>
             </div>
-        </div>
-        <div id="inputBox">
-            <p>INPUT: AUTO</p>
-            <textarea id="inputAuto" rows="4" cols="56"></textarea>
-            <p>INPUT: TELEOP</p>
-            <textarea id="inputTeleop" rows="4" cols="56"></textarea>
-        </div>
-        <div id="keyContainer">
-            <p id="keyHeader">KEY</p>
-            <div id="keyContentContainer">
-                <table id="keyAuto" class="keyTable" border=1>
-                    <tr>
-                        <td></td> <td>Auto:</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>Robot 1</td> <td>Robot 2</td> <td>Robot 3</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>High Hot Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>q</td> <td>t</td> <td>o</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>High Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>a</td> <td>g</td> <td>l</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Low Hot Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>w</td> <td>y</td> <td>p</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Low Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>s</td> <td>h</td> <td>;</td>
-                    </tr>
-                </table>
-                <table id="keyTeleop" class="keyTable">
-                    <tr>
-                        <td></td> <td>Teleop:</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>Robot 1</td> <td>Robot 2</td> <td>Robot 3</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>High Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>q</td> <td>t</td> <td>o</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Low Goal</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>a</td> <td>g</td> <td>l</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Truss Score</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>z</td> <td>b</td> <td>.</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Truss Catch</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>w</td> <td>y</td> <td>p</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Ball Pass</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>s</td> <td>h</td> <td>;</td>
-                    </tr>
-                    <tr>
-                        <td></td> <td>Legit Ball Pass</td> <td></td>
-                    </tr>
-                    <tr>
-                        <td>x</td> <td>n</td> <td>/</td>
-                    </tr>
-                </table>
-                <table id="keyTags" class="keyTable">
-                    <tr>
-                        <td>Tags:</td>
-                    </tr>
-                    <tr>
-                        <td>Defensive?: 1</td>
-                    </tr>
-                    <tr>
-                        <td>Legit Defense?: 2</td>
-                    </tr>
-                    <tr>
-                        <td>Offensive?: 3</td>
-                    </tr>
-                    <tr>
-                        <td>Legit Offense?: 4</td>
-                    </tr>
-                    <tr>
-                        <td>Broken?: 5</td>
-                    </tr>
-                    <tr>
-                        <td>Can Catch From Player?: 6</td>
-                    </tr> 
-                    <tr>
-                        <td>Ball Can Fall Easily?: 7</td>
-                    </tr> 
-                    <tr>
-                        <td>Compatible with Raiderbot?: 8</td>
-                    </tr>                    
-                </table>
+            <div id="teleopContainer" class="backgroundLightGray dataCollection centerText">
+                Teleop
+                <div class="labelContainer">
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">High:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Low:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Passes:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Truss:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">High Attempts:</div>
+                    <div class="label backgroundBlue curvedBorder borderGray centerText">Truss Attempts:</div>
+                </div>
+                <div class="redDataContainer">
+                    Red
+                    <input type="text" id="redTeleopHigh" class="data centerText">
+                    <input type="text" id="redTeleopLow" class="data centerText">
+                    <input type="text" id="redTeleopPasses" class="data centerText">
+                    <input type="text" id="redTeleopTruss" class="data centerText">
+                    <input type="text" id="redTeleopHighAttempts" class="data centerText">
+                    <input type="text" id="redTeleopTrussAttempts" class="data centerText">
+                </div>
+                <div class="blueDataContainer">
+                    Blue
+                    <input type="text" id="blueTeleopHigh" class="data centerText">
+                    <input type="text" id="blueTeleopLow" class="data centerText">
+                    <input type="text" id="blueTeleopPasses" class="data centerText">
+                    <input type="text" id="blueTeleopTruss" class="data centerText">
+                    <input type="text" id="blueTeleopHighAttempts" class="data centerText">
+                    <input type="text" id="blueTeleopTrussAttempts" class="data centerText">
+                </div>
+            </div>
+            <div id="tagsAndCommentsContainer" class="backgroundLightGray">
+                <div id="tagsContainer" class="centerText">
+                    Tags
+                    <div class="redTagContainer centerText">
+                        Red
+                        <div id="redTags" class="tagInput">
+                            <div class="tagColumn">
+                                <div id="offensive" class="tag offensive backgroundLightGray centerText">Offensive</div>
+                                <div id="defensive" class="tag defensive backgroundLightGray centerText">Defensive</div>
+                                <div id="broken" class="tag broken backgroundLightGray centerText">Broken</div>
+                                <div id="canCatch" class="tag canCatch backgroundLightGray centerText">Can Catch</div>
+                                <div id="looseGrip" class="tag looseGrip backgroundLightGray centerText">Loose Grip</div>
+                            </div>
+                            <div class="tagColumn">
+                                <div id="offensiveSuccess" class="tag success backgroundLightGray centerText">Success</div>
+                                <div id="defensiveSuccess" class="tag success backgroundLightGray centerText">Success</div>
+                                <div id="twoBallAuto" class="tag twoBallAuto backgroundLightGray centerText">Two Ball Autonomous</div>
+                                <div id="goodWithYou" class="tag goodWithYou backgroundLightGray centerText">Compatible with Your Team</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blueTagContainer centerText">
+                        Blue
+                        <div id="blueTags" class="tagInput">
+                            <div class="tagColumn">
+                                <div id="offensive" class="tag offensive backgroundLightGray centerText">Offensive</div>
+                                <div id="defensive" class="tag defensive backgroundLightGray centerText">Defensive</div>
+                                <div id="broken" class="tag broken backgroundLightGray centerText">Broken</div>
+                                <div id="canCatch" class="tag canCatch backgroundLightGray centerText">Can Catch</div>
+                                <div id="looseGrip" class="tag looseGrip backgroundLightGray centerText">Loose Grip</div>
+                            </div>
+                            <div class="tagColumn">
+                                <div id="offensiveSuccess" class="tag success backgroundLightGray centerText">Success</div>
+                                <div id="defensiveSuccess" class="tag success backgroundLightGray centerText">Success</div>
+                                <div id="twoBallAuto" class="tag twoBallAuto backgroundLightGray centerText">Two Ball Autonomous</div>
+                                <div id="goodWithYou" class="tag goodWithYou backgroundLightGray centerText">Compatible with Your Team</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="commentsContainer" class="centerText">
+                    Comments
+                    <div class="redCommentContainer centerText">
+                        Red
+                        <textarea id="redComments" class="commentInput"></textarea>
+                    </div>
+                    <div class="blueCommentContainer centerText">
+                        Blue
+                        <textarea id="blueComments" class="commentInput"></textarea>
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="team1Data">
-            <div class="teamNameLable">
-                <p class="teamNameHeader">Team #1:</p>
-            </div>
-            <input type="text" id="teamName1" class="teamName">
-            <p class="tagsHeader">Tags</p>
-            <textarea id="tags1" rows="3" cols="26" class="tags"></textarea>
-            <p class="commentsHeader">Comments</p>
-            <textarea id="comments1" rows="3" cols="26" class="comments"></textarea>
+        <div id="matchNumberContainer">
+            <div id ="matchTitleBox" class="backgroundDarkGray curvedBorder centerText">MATCH #:</div>
+            <input type="text" id="matchNumber" class="backgroundDarkGray curvedBorder centerText">
         </div>
-        <div id="team2Data">
-            <div class="teamNameLable">
-                <p class="teamNameHeader">Team #2:</p>
-            </div>
-            <input type="text" id="teamName2" class="teamName">
-            <p class="tagsHeader">Tags</p>
-            <textarea id="tags2" rows="3" cols="26" class="tags"></textarea>
-            <p class="commentsHeader">Comments</p>
-            <textarea id="comments2" rows="3" cols="26" class="comments"></textarea>
-        </div>
-        <div id="team3Data">
-            <div class="teamNameLable">
-                <p class="teamNameHeader">Team #3:</p>
-            </div>
-            <input type="text" id="teamName3" class="teamName"/>
-            <p class="tagsHeader">Tags</p>
-            <textarea id="tags3" rows="3" cols="26" class="tags"></textarea>
-            <p class="commentsHeader">Comments</p>
-            <textarea id="comments3" rows="3" cols="26" class="comments"></textarea>
+        <div id="fileButtonsContainer">
+            <div id="saveMatchFileBox" class="backgroundBlue centerText curvedBorder borderGray">SAVE</div>
+            <div id="createMasterFileBox" class="backgroundBlue centerText curvedBorder borderGray">CREATE MASTER FILE</div>
+            <input type="file" id="createMasterFile" multiple/>
         </div>
     </div>
 </body>

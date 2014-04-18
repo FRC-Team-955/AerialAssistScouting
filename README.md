@@ -1,4 +1,4 @@
-AerialAssistScouting-1.2
+AerialAssistScouting-1.5
 ========================
 
 You need two gamepads to run the program, the first one connected adjusts red team values, the second, blue. You can upload a
